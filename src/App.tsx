@@ -19,6 +19,8 @@ export default function App() {
   const [teamOptions, setTeamOptions] = useState<string[]>([])
   const [selectedTeams, setSelectedTeams] = useState<string[]>([])
   const [gameTeams, setGameTeams] = useState<string[]>([])
+  const [isTeamPickerOpen, setIsTeamPickerOpen] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false)
   const [query, setQuery] = useState('')
   const [players, setPlayers] = useState<Player[]>([])
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1)
@@ -30,7 +32,17 @@ export default function App() {
   const activePlayerRef = useRef<HTMLButtonElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const submittingRef = useRef(false)
+  const gameVersionRef = useRef(0)
   const finished = Boolean(answer)
+
+  useEffect(() => {
+    document.body.classList.toggle('light-theme', !isDarkMode)
+    document.documentElement.classList.toggle('light-theme', !isDarkMode)
+    return () => {
+      document.body.classList.remove('light-theme')
+      document.documentElement.classList.remove('light-theme')
+    }
+  }, [isDarkMode])
 
   const canSearch = useMemo(() => query.trim().length >= 2 && mode && !finished, [query, mode, finished])
 
@@ -38,11 +50,16 @@ export default function App() {
     const date = state.rosterDate?.replaceAll('-', '.') ?? '동기화 전'
     setMeta(`선수 명단 기준일: ${date} · 선수 수: ${state.playerCount}명 · 시도: ${tries}/${MAX_TRIES}`)
   }
-  async function updateMeta(tries = guesses.length) {
+  async function updateMeta(tries = guesses.length, gameVersion = gameVersionRef.current) {
     if (!gameId) return
-    setMetaFromState(await api.state(gameId), tries)
+    const state = await api.state(gameId)
+    if (gameVersion === gameVersionRef.current) setMetaFromState(state, tries)
   }
-  async function showAnswer() { if (gameId) setAnswer(await api.answer(gameId)) }
+  async function showAnswer(gameVersion = gameVersionRef.current) {
+    if (!gameId) return
+    const result = await api.answer(gameId)
+    if (gameVersion === gameVersionRef.current) setAnswer(result)
+  }
   async function reset(nextMode: Mode) {
     if (!gameId) return
     try {
@@ -53,17 +70,22 @@ export default function App() {
   }
   async function start(nextMode: Mode) {
     if (selectedTeams.length === 0) { setMessage('한 개 이상의 구단을 선택해주세요.'); return }
+    const gameVersion = ++gameVersionRef.current
     try {
       const game = await api.create(nextMode, selectedTeams)
+      if (gameVersion !== gameVersionRef.current) return
       setGameId(game.gameId)
       window.history.replaceState(null, '', `/game/${game.gameId}`)
       setMode(game.mode)
+      setSetupMode(game.mode)
       setGameTeams(game.teams)
+      setIsTeamPickerOpen(false)
       setGuesses([]); setAnswer(null); setQuery(''); setPlayers([]); setActivePlayerIndex(-1); setMessage(null)
       setMetaFromState(game, 0)
     } catch { setMessage('새 게임을 시작하지 못했습니다. 백엔드 연결을 확인해주세요.') }
   }
   function returnToSetup() {
+    gameVersionRef.current += 1
     setGameId(null)
     setMode(null)
     setGameTeams([])
@@ -78,17 +100,20 @@ export default function App() {
   }
   async function selectPlayer(player: Player) {
     if (!gameId || !mode || gameTeams.length === 0 || finished || guesses.length >= MAX_TRIES || submittingRef.current) return
+    const gameVersion = gameVersionRef.current
     submittingRef.current = true
     setIsSubmitting(true)
     setPlayers([])
     setActivePlayerIndex(-1)
     try {
       const result = await api.guess(gameId, player.id)
+      if (gameVersion !== gameVersionRef.current) return
       const nextCount = guesses.length + 1
       setGuesses(previous => [...previous, result]); setQuery(''); setPlayers([]); setActivePlayerIndex(-1)
-      await updateMeta(nextCount)
-      if (result.isCorrect) { await showAnswer(); setMessage(`정답입니다! ${result.picked.name} 선수를 맞혔어요.`) }
-      else if (nextCount >= MAX_TRIES) { await showAnswer(); setMessage('시도 횟수를 모두 사용했습니다.') }
+      await updateMeta(nextCount, gameVersion)
+      if (gameVersion !== gameVersionRef.current) return
+      if (result.isCorrect) { await showAnswer(gameVersion); if (gameVersion === gameVersionRef.current) setMessage(`정답입니다! ${result.picked.name} 선수를 맞혔어요.`) }
+      else if (nextCount >= MAX_TRIES) { await showAnswer(gameVersion); if (gameVersion === gameVersionRef.current) setMessage('시도 횟수를 모두 사용했습니다.') }
     } catch { setMessage('추리 요청에 실패했습니다. 잠시 후 다시 시도해주세요.') }
     finally {
       submittingRef.current = false
@@ -98,8 +123,12 @@ export default function App() {
 
   useEffect(() => {
     if (!gameId) { setMeta('게임을 선택해주세요.'); return }
+    const gameVersion = gameVersionRef.current
     api.state(gameId).then(state => {
+      if (gameVersion !== gameVersionRef.current) return
       setMode(state.mode)
+      setSetupMode(state.mode)
+      setSelectedTeams(state.teams)
       setGameTeams(state.teams)
       setMetaFromState(state)
     }).catch(() => {
@@ -154,13 +183,13 @@ export default function App() {
     return () => window.removeEventListener('keydown', focusSearchOnTyping)
   }, [finished, mode])
 
-  if (!mode) return <main className="landing"><section><p className="eyebrow">KBO PLAYER GUESS</p><h1>KBO 선수를<br />맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>선택한 구단으로 시작하기</button>{message && <div className="notice">{message}</div>}</section></main>
+  if (!mode) return <main className="landing"><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button><section><p className="eyebrow">KBO PLAYER GUESS</p><h1>KBO 선수를<br />맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>선택한 구단으로 시작하기</button>{message && <div className="notice">{message}</div>}</section></main>
 
   return (
     <main className="app">
       <header>
         <button className="brand" onClick={returnToSetup}>KBO GUESS</button>
-        <button className="mode-switch" onClick={() => start(mode === 'REGULAR' ? 'ALL' : 'REGULAR')}>{mode === 'REGULAR' ? '퓨처스 포함하기' : '1군만 보기'}</button>
+        <div className="header-actions"><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button></div>
       </header>
       <section className="hero"><p className="eyebrow">{mode === 'REGULAR' ? 'REGULAR ROSTER' : 'ALL ROSTER'}</p><h1>선수 맞추기</h1></section>
       <section className="board">
@@ -168,6 +197,7 @@ export default function App() {
         {guesses.map((guess, index) => <div className="grid row" key={`${guess.picked.id}-${index}`}><strong>{guess.picked.name}<small>{guess.picked.team}</small></strong>{fields.map(([key, , valueKey]) => <div className={`cell ${guess.compare[key].status.toLowerCase()}`} key={key}>{String(guess.picked[valueKey])}<em>{statusText[guess.compare[key].status]}</em></div>)}</div>)}
       </section>
       <div className="game-status"><p>{meta}</p>{message && <div className="notice">{message}</div>}</div>
+      <section className="current-teams"><b>현재 출제 구단</b><div>{gameTeams.map(team => <span key={team}>{team}</span>)}</div></section>
       <section className="search">
         <div className="search-row">
           <div className="search-input" onBlur={event => {
@@ -191,9 +221,11 @@ export default function App() {
             {players.length > 0 && <div className="suggestions">{players.map((player, index) => <button disabled={isSubmitting} className={index === activePlayerIndex ? 'active' : undefined} ref={index === activePlayerIndex ? activePlayerRef : undefined} key={player.id} onClick={() => selectPlayer(player)}><b>{player.name}</b><span>{player.team} · {player.position} · {player.birthYear}년생</span></button>)}</div>}
           </div>
           <button className="reset" onClick={() => start(mode)}>새 게임 시작</button>
+          <button className="team-select" onClick={() => setIsTeamPickerOpen(true)}>구단 변경</button>
         </div>
       </section>
       {answer && <section className="answer"><p>정답 선수</p><h2>{answer.name}</h2><span>{answer.team} · {answer.backNo}번 · {answer.position} · {answer.height}cm / {answer.weight}kg</span></section>}
+      {isTeamPickerOpen && <div className="game-modal-backdrop" onMouseDown={() => setIsTeamPickerOpen(false)}><section className="game-modal" role="dialog" aria-modal="true" aria-label="다음 게임 설정" onMouseDown={event => event.stopPropagation()}><div className="modal-header"><div><p className="eyebrow">NEXT GAME</p><h2>다음 게임 출제 구단</h2></div><button onClick={() => setIsTeamPickerOpen(false)} aria-label="닫기">×</button></div><p>게임을 시작하면 아래 설정으로 새로운 정답 선수가 출제됩니다.</p><div className="modal-mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><div className="modal-team-picker"><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="modal-start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>새 게임 시작</button></section></div>}
     </main>
   )
 }
