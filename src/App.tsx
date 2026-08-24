@@ -124,7 +124,10 @@ export default function App() {
       <section className="search">
         <div className="search-row">
           <div className="search-input" onBlur={event => {
-            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { setPlayers([]); setActivePlayerIndex(-1) }
+            const container = event.currentTarget
+            window.setTimeout(() => {
+              if (!container.contains(document.activeElement)) { setPlayers([]); setActivePlayerIndex(-1) }
+            }, 0)
           }}>
             <input ref={searchInputRef} autoFocus disabled={finished || isSubmitting} value={query} onChange={event => { setQuery(event.target.value); setActivePlayerIndex(-1) }} onFocus={() => {
               if (!finished && mode && query.trim().length >= 2) api.search(query.trim(), mode).then(results => {
