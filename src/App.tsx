@@ -18,12 +18,14 @@ export default function App() {
   const [query, setQuery] = useState('')
   const [players, setPlayers] = useState<Player[]>([])
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [guesses, setGuesses] = useState<Guess[]>([])
   const [answer, setAnswer] = useState<PickedPlayer | null>(null)
   const [meta, setMeta] = useState('로딩 중…')
   const [message, setMessage] = useState<string | null>(null)
   const activePlayerRef = useRef<HTMLButtonElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const submittingRef = useRef(false)
   const finished = Boolean(answer)
 
   const canSearch = useMemo(() => query.trim().length >= 2 && mode && !finished, [query, mode, finished])
@@ -47,7 +49,11 @@ export default function App() {
     await reset(nextMode)
   }
   async function selectPlayer(player: Player) {
-    if (!mode || finished || guesses.length >= MAX_TRIES) return
+    if (!mode || finished || guesses.length >= MAX_TRIES || submittingRef.current) return
+    submittingRef.current = true
+    setIsSubmitting(true)
+    setPlayers([])
+    setActivePlayerIndex(-1)
     try {
       const result = await api.guess(gameId, player.id)
       const nextCount = guesses.length + 1
@@ -56,6 +62,10 @@ export default function App() {
       if (result.isCorrect) { await showAnswer(); setMessage(`정답입니다! ${result.picked.name} 선수를 맞혔어요.`) }
       else if (nextCount >= MAX_TRIES) { await showAnswer(); setMessage('시도 횟수를 모두 사용했습니다.') }
     } catch { setMessage('추리 요청에 실패했습니다. 잠시 후 다시 시도해주세요.') }
+    finally {
+      submittingRef.current = false
+      setIsSubmitting(false)
+    }
   }
 
   useEffect(() => {
@@ -116,7 +126,7 @@ export default function App() {
           <div className="search-input" onBlur={event => {
             if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { setPlayers([]); setActivePlayerIndex(-1) }
           }}>
-            <input ref={searchInputRef} autoFocus disabled={finished} value={query} onChange={event => { setQuery(event.target.value); setActivePlayerIndex(-1) }} onFocus={() => {
+            <input ref={searchInputRef} autoFocus disabled={finished || isSubmitting} value={query} onChange={event => { setQuery(event.target.value); setActivePlayerIndex(-1) }} onFocus={() => {
               if (!finished && mode && query.trim().length >= 2) api.search(query.trim(), mode).then(results => {
                 setPlayers(results)
                 setActivePlayerIndex(results.length > 0 ? 0 : -1)
@@ -128,7 +138,7 @@ export default function App() {
               else if (event.key === 'ArrowUp') { event.preventDefault(); setActivePlayerIndex(index => index <= 0 ? players.length - 1 : index - 1) }
               else if (event.key === 'Enter' && activePlayerIndex >= 0) { event.preventDefault(); selectPlayer(players[activePlayerIndex]) }
             }} placeholder="선수명 2글자 이상 입력" />
-            {players.length > 0 && <div className="suggestions">{players.map((player, index) => <button className={index === activePlayerIndex ? 'active' : undefined} ref={index === activePlayerIndex ? activePlayerRef : undefined} key={player.id} onClick={() => selectPlayer(player)}><b>{player.name}</b><span>{player.team} · {player.position} · {player.birthYear}년생</span></button>)}</div>}
+            {players.length > 0 && <div className="suggestions">{players.map((player, index) => <button disabled={isSubmitting} className={index === activePlayerIndex ? 'active' : undefined} ref={index === activePlayerIndex ? activePlayerRef : undefined} key={player.id} onClick={() => selectPlayer(player)}><b>{player.name}</b><span>{player.team} · {player.position} · {player.birthYear}년생</span></button>)}</div>}
           </div>
           <button className="reset" onClick={() => reset(mode)}>새 게임 시작</button>
         </div>
