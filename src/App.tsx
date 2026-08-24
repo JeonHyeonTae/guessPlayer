@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { api, type Guess, type Mode, type PickedPlayer, type Player, type Status } from './api'
 
 const MAX_TRIES = 8
+const GAME_URL = 'https://guess-player-eosin.vercel.app/'
 const SHARE_TEXT = String.raw`     ╭ ─ ─ ╮
 ?   │ KBO │ ?
      ╰─┬─╯
@@ -11,11 +12,12 @@ const SHARE_TEXT = String.raw`     ╭ ─ ─ ╮
 
 이 선수, 맞힐 수 있겠어?
 
-https://guess-player-eosin.vercel.app/`
+${GAME_URL}`
 const fields: Array<[keyof Guess['compare'], string, keyof PickedPlayer]> = [
   ['team', '구단', 'team'], ['backNo', '등번호', 'backNo'], ['position', '포지션', 'position'], ['throwingHand', '투구', 'throwingHand'], ['battingSide', '타석', 'battingSide'], ['birthYear', '출생연도', 'birthYear'], ['height', '키', 'height'], ['weight', '몸무게', 'weight'],
 ]
 const statusText: Record<Status, string> = { MATCH: '', MISMATCH: '', UP: '↑', DOWN: '↓' }
+const resultEmoji: Record<Status, string> = { MATCH: '🟩', MISMATCH: '⬜️', UP: '🟨', DOWN: '🟨' }
 
 function StaffToggle({ includeStaff, onChange, modal = false }: { includeStaff: boolean; onChange: (value: boolean) => void; modal?: boolean }) {
   return <div className={modal ? 'modal-staff-toggle' : 'staff-toggle'}>{modal && <b className="modal-setting-title">출제 대상</b>}<div className="staff-options"><button className={!includeStaff ? 'selected' : undefined} onClick={() => onChange(false)}>선수만<span>감독·코치 제외</span></button><button className={includeStaff ? 'selected' : undefined} onClick={() => onChange(true)}>감독·코치 포함<span>스태프까지 함께 출제</span></button></div></div>
@@ -38,6 +40,7 @@ export default function App() {
   const [isTeamPickerOpen, setIsTeamPickerOpen] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [isShareCopied, setIsShareCopied] = useState(false)
+  const [isResultCopied, setIsResultCopied] = useState(false)
   const [query, setQuery] = useState('')
   const [players, setPlayers] = useState<Player[]>([])
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1)
@@ -51,13 +54,14 @@ export default function App() {
   const submittingRef = useRef(false)
   const gameVersionRef = useRef(0)
   const finished = Boolean(answer)
+  const resultGrid = useMemo(() => guesses.map(guess => fields.map(([key]) => resultEmoji[guess.compare[key].status]).join('')).join('\n'), [guesses])
 
-  async function copyShareLink() {
+  async function copyToClipboard(text: string) {
     try {
-      await navigator.clipboard.writeText(SHARE_TEXT)
+      await navigator.clipboard.writeText(text)
     } catch {
       const textArea = document.createElement('textarea')
-      textArea.value = SHARE_TEXT
+      textArea.value = text
       textArea.style.position = 'fixed'
       textArea.style.opacity = '0'
       document.body.append(textArea)
@@ -65,8 +69,19 @@ export default function App() {
       document.execCommand('copy')
       textArea.remove()
     }
+  }
+
+  async function copyShareLink() {
+    await copyToClipboard(SHARE_TEXT)
     setIsShareCopied(true)
     window.setTimeout(() => setIsShareCopied(false), 1800)
+  }
+
+  async function copyResult() {
+    if (!resultGrid) return
+    await copyToClipboard(`${resultGrid}\n\n너도 맞춰볼래?\n${GAME_URL}`)
+    setIsResultCopied(true)
+    window.setTimeout(() => setIsResultCopied(false), 1800)
   }
 
   useEffect(() => {
@@ -98,7 +113,7 @@ export default function App() {
     if (!gameId) return
     try {
       await api.reset(gameId, nextMode, includeStaff)
-      setGuesses([]); setAnswer(null); setQuery(''); setPlayers([]); setActivePlayerIndex(-1); setMessage(null)
+      setGuesses([]); setAnswer(null); setQuery(''); setPlayers([]); setActivePlayerIndex(-1); setMessage(null); setIsResultCopied(false)
       await updateMeta(0)
     } catch { setMessage('게임을 초기화하지 못했습니다. 백엔드 연결을 확인해주세요.') }
   }
@@ -116,7 +131,7 @@ export default function App() {
       setGameIncludesStaff(game.includeStaff)
       setGameTeams(game.teams)
       setIsTeamPickerOpen(false)
-      setGuesses([]); setAnswer(null); setQuery(''); setPlayers([]); setActivePlayerIndex(-1); setMessage(null)
+      setGuesses([]); setAnswer(null); setQuery(''); setPlayers([]); setActivePlayerIndex(-1); setMessage(null); setIsResultCopied(false)
       setMetaFromState(game, 0)
     } catch { setMessage('새 게임을 시작하지 못했습니다. 백엔드 연결을 확인해주세요.') }
   }
@@ -263,7 +278,7 @@ export default function App() {
           <button className="team-select" onClick={() => setIsTeamPickerOpen(true)}>구단 변경</button>
         </div>
       </section>
-      {answer && <section className="answer"><p>정답 선수</p><h2>{answer.name}</h2><span>{answer.team} · {answer.backNo}번 · {answer.position} · {answer.height}cm / {answer.weight}kg</span></section>}
+      {answer && <section className="answer"><p>정답 선수</p><h2>{answer.name}</h2><span>{answer.team} · {answer.backNo}번 · {answer.position} · {answer.height}cm / {answer.weight}kg</span><button className="result-copy" onClick={copyResult}>{isResultCopied ? '결과 복사됨' : '결과 복사하기'}</button></section>}
       {isTeamPickerOpen && <div className="game-modal-backdrop" onMouseDown={() => setIsTeamPickerOpen(false)}><section className="game-modal" role="dialog" aria-modal="true" aria-label="다음 게임 설정" onMouseDown={event => event.stopPropagation()}><div className="modal-header"><div><p className="eyebrow">NEXT GAME</p><h2>다음 게임 출제 구단</h2></div><button onClick={() => setIsTeamPickerOpen(false)} aria-label="닫기">×</button></div><p>게임을 시작하면 아래 설정으로 새로운 정답 선수가 출제됩니다.</p><div className="modal-mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} modal /><div className="modal-team-picker"><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="modal-start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>새 게임 시작</button></section></div>}
     </main>
   )
