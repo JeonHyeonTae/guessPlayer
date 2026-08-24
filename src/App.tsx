@@ -2,6 +2,16 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { api, type Guess, type Mode, type PickedPlayer, type Player, type Status } from './api'
 
 const MAX_TRIES = 8
+const SHARE_TEXT = String.raw`     ╭ ─ ─ ╮
+?   │ KBO │ ?
+     ╰─┬─╯
+  ╭──┴──╮
+ │             │
+ │             │?
+
+이 선수, 맞힐 수 있겠어?
+
+https://guess-player-eosin.vercel.app/`
 const fields: Array<[keyof Guess['compare'], string, keyof PickedPlayer]> = [
   ['team', '구단', 'team'], ['backNo', '등번호', 'backNo'], ['position', '포지션', 'position'], ['throwingHand', '투구', 'throwingHand'], ['battingSide', '타석', 'battingSide'], ['birthYear', '출생연도', 'birthYear'], ['height', '키', 'height'], ['weight', '몸무게', 'weight'],
 ]
@@ -27,6 +37,7 @@ export default function App() {
   const [gameTeams, setGameTeams] = useState<string[]>([])
   const [isTeamPickerOpen, setIsTeamPickerOpen] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isShareCopied, setIsShareCopied] = useState(false)
   const [query, setQuery] = useState('')
   const [players, setPlayers] = useState<Player[]>([])
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1)
@@ -40,6 +51,23 @@ export default function App() {
   const submittingRef = useRef(false)
   const gameVersionRef = useRef(0)
   const finished = Boolean(answer)
+
+  async function copyShareLink() {
+    try {
+      await navigator.clipboard.writeText(SHARE_TEXT)
+    } catch {
+      const textArea = document.createElement('textarea')
+      textArea.value = SHARE_TEXT
+      textArea.style.position = 'fixed'
+      textArea.style.opacity = '0'
+      document.body.append(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      textArea.remove()
+    }
+    setIsShareCopied(true)
+    window.setTimeout(() => setIsShareCopied(false), 1800)
+  }
 
   useEffect(() => {
     document.body.classList.toggle('light-theme', !isDarkMode)
@@ -194,13 +222,13 @@ export default function App() {
     return () => window.removeEventListener('keydown', focusSearchOnTyping)
   }, [finished, mode])
 
-  if (!mode) return <main className="landing"><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button><section><p className="eyebrow">KBO PLAYER GUESS</p><h1>KBO 선수를<br />맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} /><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>선택한 구단으로 시작하기</button>{message && <div className="notice">{message}</div>}</section></main>
+  if (!mode) return <main className="landing"><button className="share-button" onClick={copyShareLink} aria-label="게임 링크 공유하기" title={isShareCopied ? '복사됐습니다' : '게임 링크 공유하기'}><span className="share-figure" aria-hidden="true"><i>?</i><span>KBO</span><i>?</i></span><b>{isShareCopied ? '복사됨' : '공유'}</b></button><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button><section><p className="eyebrow">KBO PLAYER GUESS</p><h1>KBO 선수를<br />맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} /><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>선택한 구단으로 시작하기</button>{message && <div className="notice">{message}</div>}</section></main>
 
   return (
     <main className="app">
       <header>
         <button className="brand" onClick={returnToSetup}>KBO GUESS</button>
-        <div className="header-actions"><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button></div>
+        <div className="header-actions"><button className="share-button" onClick={copyShareLink} aria-label="게임 링크 공유하기" title={isShareCopied ? '복사됐습니다' : '게임 링크 공유하기'}><span className="share-figure" aria-hidden="true"><i>?</i><span>KBO</span><i>?</i></span><b>{isShareCopied ? '복사됨' : '공유'}</b></button><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button></div>
       </header>
       <section className="hero"><p className="eyebrow">{mode === 'REGULAR' ? 'REGULAR ROSTER' : 'ALL ROSTER'}</p><h1>선수 맞추기</h1></section>
       <section className="board">
