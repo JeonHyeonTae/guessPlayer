@@ -9,11 +9,11 @@ const statusText: Record<Status, string> = { MATCH: '', MISMATCH: '', UP: '↑',
 
 function gameIdFromPath() {
   const match = window.location.pathname.match(/^\/game\/([\w-]+)$/)
-  return match?.[1] ?? crypto.randomUUID()
+  return match?.[1] ?? null
 }
 
 export default function App() {
-  const [gameId] = useState(gameIdFromPath)
+  const [gameId, setGameId] = useState(gameIdFromPath)
   const [mode, setMode] = useState<Mode | null>(null)
   const [query, setQuery] = useState('')
   const [players, setPlayers] = useState<Player[]>([])
@@ -30,13 +30,17 @@ export default function App() {
 
   const canSearch = useMemo(() => query.trim().length >= 2 && mode && !finished, [query, mode, finished])
 
-  async function updateMeta(tries = guesses.length) {
-    const state = await api.state(gameId)
+  function setMetaFromState(state: { rosterDate: string | null; playerCount: number }, tries = guesses.length) {
     const date = state.rosterDate?.replaceAll('-', '.') ?? '동기화 전'
     setMeta(`선수 명단 기준일: ${date} · 선수 수: ${state.playerCount}명 · 시도: ${tries}/${MAX_TRIES}`)
   }
-  async function showAnswer() { setAnswer(await api.answer(gameId)) }
+  async function updateMeta(tries = guesses.length) {
+    if (!gameId) return
+    setMetaFromState(await api.state(gameId), tries)
+  }
+  async function showAnswer() { if (gameId) setAnswer(await api.answer(gameId)) }
   async function reset(nextMode: Mode) {
+    if (!gameId) return
     try {
       await api.reset(gameId, nextMode)
       setGuesses([]); setAnswer(null); setQuery(''); setPlayers([]); setActivePlayerIndex(-1); setMessage(null)
@@ -44,12 +48,17 @@ export default function App() {
     } catch { setMessage('게임을 초기화하지 못했습니다. 백엔드 연결을 확인해주세요.') }
   }
   async function start(nextMode: Mode) {
-    if (!window.location.pathname.startsWith('/game/')) window.history.replaceState(null, '', `/game/${gameId}`)
-    setMode(nextMode)
-    await reset(nextMode)
+    try {
+      const game = await api.create(nextMode)
+      setGameId(game.gameId)
+      window.history.replaceState(null, '', `/game/${game.gameId}`)
+      setMode(game.mode)
+      setGuesses([]); setAnswer(null); setQuery(''); setPlayers([]); setActivePlayerIndex(-1); setMessage(null)
+      setMetaFromState(game, 0)
+    } catch { setMessage('새 게임을 시작하지 못했습니다. 백엔드 연결을 확인해주세요.') }
   }
   async function selectPlayer(player: Player) {
-    if (!mode || finished || guesses.length >= MAX_TRIES || submittingRef.current) return
+    if (!gameId || !mode || finished || guesses.length >= MAX_TRIES || submittingRef.current) return
     submittingRef.current = true
     setIsSubmitting(true)
     setPlayers([])
@@ -67,6 +76,17 @@ export default function App() {
       setIsSubmitting(false)
     }
   }
+
+  useEffect(() => {
+    if (!gameId) { setMeta('게임을 선택해주세요.'); return }
+    api.state(gameId).then(state => {
+      setMode(state.mode)
+      setMetaFromState(state)
+    }).catch(() => {
+      setMessage('게임을 찾을 수 없습니다. 새 게임을 시작해주세요.')
+      setMeta('게임을 찾을 수 없습니다.')
+    })
+  }, [gameId])
 
   useEffect(() => {
     if (!canSearch || !mode) { setPlayers([]); setActivePlayerIndex(-1); return }
@@ -143,7 +163,7 @@ export default function App() {
             }} placeholder="선수명 2글자 이상 입력" />
             {players.length > 0 && <div className="suggestions">{players.map((player, index) => <button disabled={isSubmitting} className={index === activePlayerIndex ? 'active' : undefined} ref={index === activePlayerIndex ? activePlayerRef : undefined} key={player.id} onClick={() => selectPlayer(player)}><b>{player.name}</b><span>{player.team} · {player.position} · {player.birthYear}년생</span></button>)}</div>}
           </div>
-          <button className="reset" onClick={() => reset(mode)}>새 게임 시작</button>
+          <button className="reset" onClick={() => start(mode)}>새 게임 시작</button>
         </div>
       </section>
       {answer && <section className="answer"><p>정답 선수</p><h2>{answer.name}</h2><span>{answer.team} · {answer.backNo}번 · {answer.position} · {answer.height}cm / {answer.weight}kg</span></section>}
