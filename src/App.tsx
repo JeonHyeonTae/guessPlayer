@@ -63,6 +63,19 @@ export default function App() {
       setMetaFromState(game, 0)
     } catch { setMessage('새 게임을 시작하지 못했습니다. 백엔드 연결을 확인해주세요.') }
   }
+  function returnToSetup() {
+    setGameId(null)
+    setMode(null)
+    setGameTeams([])
+    setGuesses([])
+    setAnswer(null)
+    setQuery('')
+    setPlayers([])
+    setActivePlayerIndex(-1)
+    setMessage(null)
+    setMeta('게임을 선택해주세요.')
+    window.history.replaceState(null, '', '/')
+  }
   async function selectPlayer(player: Player) {
     if (!gameId || !mode || gameTeams.length === 0 || finished || guesses.length >= MAX_TRIES || submittingRef.current) return
     submittingRef.current = true
@@ -146,7 +159,7 @@ export default function App() {
   return (
     <main className="app">
       <header>
-        <button className="brand" onClick={() => setMode(null)}>KBO GUESS</button>
+        <button className="brand" onClick={returnToSetup}>KBO GUESS</button>
         <button className="mode-switch" onClick={() => start(mode === 'REGULAR' ? 'ALL' : 'REGULAR')}>{mode === 'REGULAR' ? '퓨처스 포함하기' : '1군만 보기'}</button>
       </header>
       <section className="hero"><p className="eyebrow">{mode === 'REGULAR' ? 'REGULAR ROSTER' : 'ALL ROSTER'}</p><h1>선수 맞추기</h1></section>
