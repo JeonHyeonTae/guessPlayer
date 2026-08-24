@@ -7,6 +7,10 @@ const fields: Array<[keyof Guess['compare'], string, keyof PickedPlayer]> = [
 ]
 const statusText: Record<Status, string> = { MATCH: '', MISMATCH: '', UP: '↑', DOWN: '↓' }
 
+function StaffToggle({ includeStaff, onChange, modal = false }: { includeStaff: boolean; onChange: (value: boolean) => void; modal?: boolean }) {
+  return <div className={modal ? 'modal-staff-toggle' : 'staff-toggle'}>{modal && <b className="modal-setting-title">출제 대상</b>}<div className="staff-options"><button className={!includeStaff ? 'selected' : undefined} onClick={() => onChange(false)}>선수만<span>감독·코치 제외</span></button><button className={includeStaff ? 'selected' : undefined} onClick={() => onChange(true)}>감독·코치 포함<span>스태프까지 함께 출제</span></button></div></div>
+}
+
 function gameIdFromPath() {
   const match = window.location.pathname.match(/^\/game\/([\w-]+)$/)
   return match?.[1] ?? null
@@ -16,6 +20,8 @@ export default function App() {
   const [gameId, setGameId] = useState(gameIdFromPath)
   const [mode, setMode] = useState<Mode | null>(null)
   const [setupMode, setSetupMode] = useState<Mode>('REGULAR')
+  const [includeStaff, setIncludeStaff] = useState(false)
+  const [gameIncludesStaff, setGameIncludesStaff] = useState(false)
   const [teamOptions, setTeamOptions] = useState<string[]>([])
   const [selectedTeams, setSelectedTeams] = useState<string[]>([])
   const [gameTeams, setGameTeams] = useState<string[]>([])
@@ -63,7 +69,7 @@ export default function App() {
   async function reset(nextMode: Mode) {
     if (!gameId) return
     try {
-      await api.reset(gameId, nextMode)
+      await api.reset(gameId, nextMode, includeStaff)
       setGuesses([]); setAnswer(null); setQuery(''); setPlayers([]); setActivePlayerIndex(-1); setMessage(null)
       await updateMeta(0)
     } catch { setMessage('게임을 초기화하지 못했습니다. 백엔드 연결을 확인해주세요.') }
@@ -72,12 +78,14 @@ export default function App() {
     if (selectedTeams.length === 0) { setMessage('한 개 이상의 구단을 선택해주세요.'); return }
     const gameVersion = ++gameVersionRef.current
     try {
-      const game = await api.create(nextMode, selectedTeams)
+      const game = await api.create(nextMode, includeStaff, selectedTeams)
       if (gameVersion !== gameVersionRef.current) return
       setGameId(game.gameId)
       window.history.replaceState(null, '', `/game/${game.gameId}`)
       setMode(game.mode)
       setSetupMode(game.mode)
+      setIncludeStaff(game.includeStaff)
+      setGameIncludesStaff(game.includeStaff)
       setGameTeams(game.teams)
       setIsTeamPickerOpen(false)
       setGuesses([]); setAnswer(null); setQuery(''); setPlayers([]); setActivePlayerIndex(-1); setMessage(null)
@@ -88,6 +96,7 @@ export default function App() {
     gameVersionRef.current += 1
     setGameId(null)
     setMode(null)
+    setGameIncludesStaff(false)
     setGameTeams([])
     setGuesses([])
     setAnswer(null)
@@ -128,6 +137,8 @@ export default function App() {
       if (gameVersion !== gameVersionRef.current) return
       setMode(state.mode)
       setSetupMode(state.mode)
+      setIncludeStaff(state.includeStaff)
+      setGameIncludesStaff(state.includeStaff)
       setSelectedTeams(state.teams)
       setGameTeams(state.teams)
       setMetaFromState(state)
@@ -146,12 +157,12 @@ export default function App() {
 
   useEffect(() => {
     if (!canSearch || !mode) { setPlayers([]); setActivePlayerIndex(-1); return }
-    const timer = window.setTimeout(() => api.search(query.trim(), mode, gameTeams).then(results => {
+    const timer = window.setTimeout(() => api.search(query.trim(), mode, gameIncludesStaff, gameTeams).then(results => {
       setPlayers(results)
       setActivePlayerIndex(results.length > 0 ? 0 : -1)
     }).catch(() => { setPlayers([]); setActivePlayerIndex(-1) }), 250)
     return () => window.clearTimeout(timer)
-  }, [query, mode, gameTeams, canSearch])
+  }, [query, mode, gameIncludesStaff, gameTeams, canSearch])
 
   useEffect(() => {
     if (guesses.length === 0) return
@@ -183,7 +194,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', focusSearchOnTyping)
   }, [finished, mode])
 
-  if (!mode) return <main className="landing"><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button><section><p className="eyebrow">KBO PLAYER GUESS</p><h1>KBO 선수를<br />맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>선택한 구단으로 시작하기</button>{message && <div className="notice">{message}</div>}</section></main>
+  if (!mode) return <main className="landing"><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button><section><p className="eyebrow">KBO PLAYER GUESS</p><h1>KBO 선수를<br />맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} /><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>선택한 구단으로 시작하기</button>{message && <div className="notice">{message}</div>}</section></main>
 
   return (
     <main className="app">
@@ -207,7 +218,7 @@ export default function App() {
             }, 0)
           }}>
             <input ref={searchInputRef} autoFocus disabled={finished || isSubmitting} value={query} onChange={event => { setQuery(event.target.value); setActivePlayerIndex(-1) }} onFocus={() => {
-              if (!finished && mode && query.trim().length >= 2) api.search(query.trim(), mode, gameTeams).then(results => {
+              if (!finished && mode && query.trim().length >= 2) api.search(query.trim(), mode, gameIncludesStaff, gameTeams).then(results => {
                 setPlayers(results)
                 setActivePlayerIndex(results.length > 0 ? 0 : -1)
               }).catch(() => { setPlayers([]); setActivePlayerIndex(-1) })
@@ -225,7 +236,7 @@ export default function App() {
         </div>
       </section>
       {answer && <section className="answer"><p>정답 선수</p><h2>{answer.name}</h2><span>{answer.team} · {answer.backNo}번 · {answer.position} · {answer.height}cm / {answer.weight}kg</span></section>}
-      {isTeamPickerOpen && <div className="game-modal-backdrop" onMouseDown={() => setIsTeamPickerOpen(false)}><section className="game-modal" role="dialog" aria-modal="true" aria-label="다음 게임 설정" onMouseDown={event => event.stopPropagation()}><div className="modal-header"><div><p className="eyebrow">NEXT GAME</p><h2>다음 게임 출제 구단</h2></div><button onClick={() => setIsTeamPickerOpen(false)} aria-label="닫기">×</button></div><p>게임을 시작하면 아래 설정으로 새로운 정답 선수가 출제됩니다.</p><div className="modal-mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><div className="modal-team-picker"><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="modal-start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>새 게임 시작</button></section></div>}
+      {isTeamPickerOpen && <div className="game-modal-backdrop" onMouseDown={() => setIsTeamPickerOpen(false)}><section className="game-modal" role="dialog" aria-modal="true" aria-label="다음 게임 설정" onMouseDown={event => event.stopPropagation()}><div className="modal-header"><div><p className="eyebrow">NEXT GAME</p><h2>다음 게임 출제 구단</h2></div><button onClick={() => setIsTeamPickerOpen(false)} aria-label="닫기">×</button></div><p>게임을 시작하면 아래 설정으로 새로운 정답 선수가 출제됩니다.</p><div className="modal-mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} modal /><div className="modal-team-picker"><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="modal-start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>새 게임 시작</button></section></div>}
     </main>
   )
 }
