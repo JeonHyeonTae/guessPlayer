@@ -15,6 +15,10 @@ function gameIdFromPath() {
 export default function App() {
   const [gameId, setGameId] = useState(gameIdFromPath)
   const [mode, setMode] = useState<Mode | null>(null)
+  const [setupMode, setSetupMode] = useState<Mode>('REGULAR')
+  const [teamOptions, setTeamOptions] = useState<string[]>([])
+  const [selectedTeams, setSelectedTeams] = useState<string[]>([])
+  const [gameTeams, setGameTeams] = useState<string[]>([])
   const [query, setQuery] = useState('')
   const [players, setPlayers] = useState<Player[]>([])
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1)
@@ -48,17 +52,19 @@ export default function App() {
     } catch { setMessage('게임을 초기화하지 못했습니다. 백엔드 연결을 확인해주세요.') }
   }
   async function start(nextMode: Mode) {
+    if (selectedTeams.length === 0) { setMessage('한 개 이상의 구단을 선택해주세요.'); return }
     try {
-      const game = await api.create(nextMode)
+      const game = await api.create(nextMode, selectedTeams)
       setGameId(game.gameId)
       window.history.replaceState(null, '', `/game/${game.gameId}`)
       setMode(game.mode)
+      setGameTeams(game.teams)
       setGuesses([]); setAnswer(null); setQuery(''); setPlayers([]); setActivePlayerIndex(-1); setMessage(null)
       setMetaFromState(game, 0)
     } catch { setMessage('새 게임을 시작하지 못했습니다. 백엔드 연결을 확인해주세요.') }
   }
   async function selectPlayer(player: Player) {
-    if (!gameId || !mode || finished || guesses.length >= MAX_TRIES || submittingRef.current) return
+    if (!gameId || !mode || gameTeams.length === 0 || finished || guesses.length >= MAX_TRIES || submittingRef.current) return
     submittingRef.current = true
     setIsSubmitting(true)
     setPlayers([])
@@ -81,6 +87,7 @@ export default function App() {
     if (!gameId) { setMeta('게임을 선택해주세요.'); return }
     api.state(gameId).then(state => {
       setMode(state.mode)
+      setGameTeams(state.teams)
       setMetaFromState(state)
     }).catch(() => {
       setMessage('게임을 찾을 수 없습니다. 새 게임을 시작해주세요.')
@@ -89,13 +96,20 @@ export default function App() {
   }, [gameId])
 
   useEffect(() => {
+    api.teams(setupMode).then(teams => {
+      setTeamOptions(teams)
+      setSelectedTeams(previous => previous.filter(team => teams.includes(team)))
+    }).catch(() => setMessage('구단 목록을 불러오지 못했습니다.'))
+  }, [setupMode])
+
+  useEffect(() => {
     if (!canSearch || !mode) { setPlayers([]); setActivePlayerIndex(-1); return }
-    const timer = window.setTimeout(() => api.search(query.trim(), mode).then(results => {
+    const timer = window.setTimeout(() => api.search(query.trim(), mode, gameTeams).then(results => {
       setPlayers(results)
       setActivePlayerIndex(results.length > 0 ? 0 : -1)
     }).catch(() => { setPlayers([]); setActivePlayerIndex(-1) }), 250)
     return () => window.clearTimeout(timer)
-  }, [query, mode, canSearch])
+  }, [query, mode, gameTeams, canSearch])
 
   useEffect(() => {
     if (guesses.length === 0) return
@@ -127,7 +141,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', focusSearchOnTyping)
   }, [finished, mode])
 
-  if (!mode) return <main className="landing"><section><p className="eyebrow">KBO PLAYER GUESS</p><h1>KBO 선수를<br />맞혀보세요.</h1><p>선수 정보를 비교하며 8번 안에 정답을 찾아보세요.</p><div className="mode-grid"><button onClick={() => start('REGULAR')}>1군<span>현역 1군 선수</span></button><button onClick={() => start('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div></section></main>
+  if (!mode) return <main className="landing"><section><p className="eyebrow">KBO PLAYER GUESS</p><h1>KBO 선수를<br />맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>선택한 구단으로 시작하기</button>{message && <div className="notice">{message}</div>}</section></main>
 
   return (
     <main className="app">
@@ -150,7 +164,7 @@ export default function App() {
             }, 0)
           }}>
             <input ref={searchInputRef} autoFocus disabled={finished || isSubmitting} value={query} onChange={event => { setQuery(event.target.value); setActivePlayerIndex(-1) }} onFocus={() => {
-              if (!finished && mode && query.trim().length >= 2) api.search(query.trim(), mode).then(results => {
+              if (!finished && mode && query.trim().length >= 2) api.search(query.trim(), mode, gameTeams).then(results => {
                 setPlayers(results)
                 setActivePlayerIndex(results.length > 0 ? 0 : -1)
               }).catch(() => { setPlayers([]); setActivePlayerIndex(-1) })
