@@ -3,16 +3,6 @@ import { api, type Guess, type Mode, type PickedPlayer, type Player, type Status
 
 const MAX_TRIES = 8
 const GAME_URL = 'https://guess-player-eosin.vercel.app/'
-const SHARE_TEXT = String.raw`     ╭ ─ ─ ╮
-?   │ KBO │ ?
-     ╰─┬─╯
-  ╭──┴──╮
- │             │
- │             │?
-
-이 선수, 맞힐 수 있겠어?
-
-${GAME_URL}`
 const fields: Array<[keyof Guess['compare'], string, keyof PickedPlayer]> = [
   ['team', '구단', 'team'], ['backNo', '등번호', 'backNo'], ['position', '포지션', 'position'], ['throwingHand', '투구', 'throwingHand'], ['battingSide', '타석', 'battingSide'], ['birthYear', '출생연도', 'birthYear'], ['height', '키', 'height'], ['weight', '몸무게', 'weight'],
 ]
@@ -45,6 +35,7 @@ export default function App() {
   const [players, setPlayers] = useState<Player[]>([])
   const [activePlayerIndex, setActivePlayerIndex] = useState(-1)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isStartingGame, setIsStartingGame] = useState(false)
   const [guesses, setGuesses] = useState<Guess[]>([])
   const [answer, setAnswer] = useState<PickedPlayer | null>(null)
   const [meta, setMeta] = useState('로딩 중…')
@@ -72,7 +63,7 @@ export default function App() {
   }
 
   async function copyShareLink() {
-    await copyToClipboard(SHARE_TEXT)
+    await copyToClipboard(GAME_URL)
     setIsShareCopied(true)
     window.setTimeout(() => setIsShareCopied(false), 1800)
   }
@@ -119,6 +110,7 @@ export default function App() {
   }
   async function start(nextMode: Mode) {
     if (selectedTeams.length === 0) { setMessage('한 개 이상의 구단을 선택해주세요.'); return }
+    if (isStartingGame) return
     const gameVersion = ++gameVersionRef.current
     try {
       const game = await api.create(nextMode, includeStaff, selectedTeams)
@@ -237,7 +229,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', focusSearchOnTyping)
   }, [finished, mode])
 
-  if (!mode) return <main className="landing"><button className="share-button" onClick={copyShareLink} aria-label="게임 링크 공유하기" title={isShareCopied ? '복사됐습니다' : '게임 링크 공유하기'}><span className="share-figure" aria-hidden="true"><i>?</i><span>KBO</span><i>?</i></span><b>{isShareCopied ? '복사됨' : '공유'}</b></button><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button><section><p className="eyebrow">KBO PLAYER GUESS</p><h1>KBO 선수를<br />맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} /><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>선택한 구단으로 시작하기</button>{message && <div className="notice">{message}</div>}</section></main>
+  if (!mode) return <main className="landing"><button className="share-button" onClick={copyShareLink} aria-label="게임 링크 공유하기" title={isShareCopied ? '복사됐습니다' : '게임 링크 공유하기'}><span className="share-figure" aria-hidden="true"><i>?</i><span>KBO</span><i>?</i></span><b>{isShareCopied ? '복사됨' : '공유'}</b></button><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button><section><p className="eyebrow">KBO PLAYER GUESS</p><h1>KBO 선수를<br />맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} /><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0 || isStartingGame} onClick={() => start(setupMode)}>{isStartingGame ? '게임 시작 중…' : '선택한 구단으로 시작하기'}</button>{message && <div className="notice">{message}</div>}</section></main>
 
   return (
     <main className="app">
@@ -274,12 +266,12 @@ export default function App() {
             }} placeholder="선수명 2글자 이상 입력" />
             {players.length > 0 && <div className="suggestions">{players.map((player, index) => <button disabled={isSubmitting} className={index === activePlayerIndex ? 'active' : undefined} ref={index === activePlayerIndex ? activePlayerRef : undefined} key={player.id} onClick={() => selectPlayer(player)}><b>{player.name}</b><span>{player.team} · {player.position} · {player.birthYear}년생</span></button>)}</div>}
           </div>
-          <button className="reset" onClick={() => start(mode)}>새 게임 시작</button>
+          <button className="reset" disabled={isStartingGame} onClick={() => start(mode)}>{isStartingGame ? '불러오는 중…' : '새 게임 시작'}</button>
           <button className="team-select" onClick={() => setIsTeamPickerOpen(true)}>구단 변경</button>
         </div>
       </section>
       {answer && <section className="answer"><p>정답 선수</p><h2>{answer.name}</h2><span>{answer.team} · {answer.backNo}번 · {answer.position} · {answer.height}cm / {answer.weight}kg</span><button className="result-copy" onClick={copyResult}>{isResultCopied ? '결과 복사됨' : '결과 복사하기'}</button></section>}
-      {isTeamPickerOpen && <div className="game-modal-backdrop" onMouseDown={() => setIsTeamPickerOpen(false)}><section className="game-modal" role="dialog" aria-modal="true" aria-label="다음 게임 설정" onMouseDown={event => event.stopPropagation()}><div className="modal-header"><div><p className="eyebrow">NEXT GAME</p><h2>다음 게임 출제 구단</h2></div><button onClick={() => setIsTeamPickerOpen(false)} aria-label="닫기">×</button></div><p>게임을 시작하면 아래 설정으로 새로운 정답 선수가 출제됩니다.</p><div className="modal-mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} modal /><div className="modal-team-picker"><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="modal-start-game" disabled={selectedTeams.length === 0} onClick={() => start(setupMode)}>새 게임 시작</button></section></div>}
+      {isTeamPickerOpen && <div className="game-modal-backdrop" onMouseDown={() => setIsTeamPickerOpen(false)}><section className="game-modal" role="dialog" aria-modal="true" aria-label="다음 게임 설정" onMouseDown={event => event.stopPropagation()}><div className="modal-header"><div><p className="eyebrow">NEXT GAME</p><h2>다음 게임 출제 구단</h2></div><button onClick={() => setIsTeamPickerOpen(false)} aria-label="닫기">×</button></div><p>게임을 시작하면 아래 설정으로 새로운 정답 선수가 출제됩니다.</p><div className="modal-mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} modal /><div className="modal-team-picker"><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="modal-start-game" disabled={selectedTeams.length === 0 || isStartingGame} onClick={() => start(setupMode)}>{isStartingGame ? '게임 시작 중…' : '새 게임 시작'}</button></section></div>}
     </main>
   )
 }
