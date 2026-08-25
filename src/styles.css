@@ -57,4 +57,249 @@ body.light-theme .share-button{border-color:#c8d1e0;background:#fff;color:#33415
 /* Tighter title spacing across game screens. */
 .game-modal-backdrop{z-index:20}
 .hero{padding-top:44px}
+.daily-update{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 85% 20%,#354891 0,transparent 30%),#0b1020}.daily-update section{max-width:620px}.daily-update h1{margin:0;font:400 clamp(36px,6vw,60px)/1.12 'Black Han Sans',sans-serif;letter-spacing:-.05em}.daily-update section>p:last-child{margin:20px 0 0;color:#a7b0c6}@media(max-width:600px){.daily-update h1{font-size:clamp(34px,10vw,48px)}}
 @media(max-width:600px){.hero{padding-top:32px}}
+.roster-button{height:36px;display:inline-flex;align-items:center;border:1px solid #7188d6;background:#202e59;color:#e8edff;border-radius:99px;padding:9px 14px;cursor:pointer;font-size:13px;white-space:nowrap}.roster-button:hover{background:#26396f}.roster-modal{width:min(100%,760px)}.roster-modal>p strong{color:#dce4ff}.roster-modal>p i{display:inline-block;width:8px;height:8px;margin:0 4px 1px 8px;border-radius:50%;background:#78d49b}.roster-modal>p i.futures{background:#8ca9ff}.roster-state{padding:32px 0;color:#a7b0c6;text-align:center}.player-roster{display:grid;gap:16px;margin-top:22px}.roster-team-selector{display:flex;flex-wrap:wrap;gap:7px}.roster-team-selector button{border:1px solid #3b4664;border-radius:99px;background:#17223d;color:#dce4ff;padding:7px 11px;cursor:pointer;font-size:13px}.roster-team-selector button.selected{border-color:#9db2ff;background:#26396f;color:#fff;font-weight:700}.roster-team{border:1px solid #3b4664;background:#111a31}.roster-team h3{margin:0;padding:13px 16px;border-bottom:1px solid #3b4664;font-size:17px}.roster-level{padding:14px 16px;border-bottom:1px solid #29344e}.roster-level:last-child{border-bottom:0}.roster-level h4{margin:0 0 12px;color:#a7b0c6;font-size:12px;font-weight:500}.roster-level h4 span{display:inline-block;margin-right:6px;border-radius:99px;padding:3px 7px;background:#1c7549;color:#fff;font-weight:900}.roster-level h4 span.futures{background:#314d92}.roster-position{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:7px 0}.roster-position>b{font-size:13px}.roster-position>div{display:flex;flex-wrap:wrap;gap:6px}.roster-player{display:inline-flex;align-items:center;gap:5px;padding:3px 2px;font-size:12px}.roster-player::before{content:'';width:6px;height:6px;border-radius:50%;background:#78d49b}.roster-player.futures::before{background:#8ca9ff}.light-theme .roster-button{border-color:#526fbe;background:#e6edff;color:#263a70}.light-theme .roster-modal>p strong{color:#263551}.light-theme .roster-team-selector button{border-color:#c8d1e0;background:#fff;color:#33415d}.light-theme .roster-team-selector button.selected{border-color:#526fbe;background:#e6edff;color:#17213a}.light-theme .roster-team{border-color:#c8d1e0;background:#f8faff}.light-theme .roster-team h3,.light-theme .roster-level{border-color:#d7deea}@media(max-width:600px){.search .roster-button{flex:1;justify-content:center}.roster-modal{padding:20px 16px}.roster-position{grid-template-columns:1fr;gap:6px}.roster-level{padding:13px}.roster-team h3{padding:12px 13px}}
+.roster-button{height:36px;display:inline-flex;align-items:center;border:1px solid #7188d6;background:#202e59;color:#e8edff;border-radius:99px;padding:9px 14px;cursor:pointer;font-size:13px;white-space:nowrap}.roster-button:hover{background:#26396f}.roster-modal{width:min(100%,760px)}.roster-modal>p strong{color:#dce4ff}.roster-modal>p i{display:inline-block;width:8px;height:8px;margin:0 4px 1px 8px;border-radius:50%;background:#78d49b}.roster-modal>p i.futures{background:#8ca9ff}.roster-state{padding:32px 0;color:#a7b0c6;text-align:center}.player-roster{display:grid;gap:16px;margin-top:22px}.roster-team-selector{display:flex;flex-wrap:wrap;gap:7px}.roster-team-selector button{border:1px solid #3b4664;border-radius:99px;background:#17223d;color:#dce4ff;padding:7px 11px;cursor:pointer;font-size:13px}.roster-team-selector button.selected{border-color:#9db2ff;background:#26396f;color:#fff;font-weight:700}.roster-team{border:1px solid #3b4664;background:#111a31}.roster-team h3{margin:0;padding:13px 16px;border-bottom:1px solid #3b4664;font-size:17px}.roster-level{padding:14px 16px;border-bottom:1px solid #29344e}.roster-level:last-child{border-bottom:0}.roster-level h4{margin:0 0 12px;color:#a7b0c6;font-size:12px;font-weight:500}.roster-level h4 span{display:inline-block;margin-right:6px;border-radius:99px;padding:3px 7px;background:#1c7549;color:#fff;font-weight:900}.roster-level h4 span.futures{background:#314d92}.roster-position{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:7px 0}.roster-position>b{font-size:13px}.roster-position>div{display:flex;flex-wrap:wrap;gap:6px}.roster-player{display:inline-flex;align-items:center;gap:5px;border:1px solid #d7deea;background:#fff;color:#33415d;padding:3px 7px;font-size:12px}.roster-player::before{content:'';width:6px;height:6px;border-radius:50%;background:#78d49b}.roster-player.futures::before{background:#8ca9ff}.light-theme .roster-button{border-color:#526fbe;background:#e6edff;color:#263a70}.light-theme .roster-modal>p strong{color:#263551}.light-theme .roster-team-selector button{border-color:#c8d1e0;background:#fff;color:#33415d}.light-theme .roster-team-selector button.selected{border-color:#526fbe;background:#e6edff;color:#17213a}.light-theme .roster-team{border-color:#c8d1e0;background:#f8faff}.light-theme .roster-team h3,.light-theme .roster-level{border-color:#d7deea}@media(max-width:600px){.search .roster-button{flex:1;justify-content:center}.roster-modal{padding:20px 16px}.roster-position{grid-template-columns:1fr;gap:6px}.roster-level{padding:13px}.roster-team h3{padding:12px 13px}}
+
+/* Mobile layout explorer: all variants share the same controls and game data. */
+.mobile-layout-picker{display:flex;align-items:center;gap:12px;margin:22px 0 0}.mobile-layout-picker>span{color:#a7b0c6;font-size:12px;font-weight:700;white-space:nowrap}.mobile-layout-picker>div{display:flex;gap:6px}.mobile-layout-picker button{display:grid;grid-template-columns:auto auto;column-gap:5px;align-items:center;border:1px solid #3b4664;border-radius:4px;background:#131a2d;color:#dce4ff;padding:7px 9px;cursor:pointer;text-align:left}.mobile-layout-picker button b{display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#26396f;font:500 10px 'DM Mono',monospace}.mobile-layout-picker button span{font-size:11px;font-weight:700}.mobile-layout-picker button small{display:none}.mobile-layout-picker button.selected{border-color:#9db2ff;background:#26396f;color:#fff}.mobile-layout-picker button.selected b{background:#dce7ff;color:#17213a}body.light-theme .mobile-layout-picker>span{color:#526177}body.light-theme .mobile-layout-picker button{border-color:#c8d1e0;background:#fff;color:#33415d}body.light-theme .mobile-layout-picker button.selected{border-color:#526fbe;background:#e6edff;color:#17213a}body.light-theme .mobile-layout-picker button.selected b{background:#263a70;color:#fff}
+
+@media(max-width:600px){
+  .app{display:flex;flex-direction:column;padding-bottom:42px}
+  .app>header{order:1}
+  .app>.mobile-layout-picker{order:2}
+  .app>.hero{order:3}
+  .app>.board{order:4}
+  .app>.game-status{order:5}
+  .app>.current-teams{order:6}
+  .app>.search{order:7}
+  .app>.answer{order:8}
+  .mobile-layout-picker{align-items:flex-start;flex-direction:column;gap:8px;margin-top:18px}
+  .mobile-layout-picker>div{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));width:100%;gap:5px}
+  .mobile-layout-picker button{display:flex;align-items:center;justify-content:center;min-width:0;padding:8px 3px;text-align:center}
+  .mobile-layout-picker button b{width:18px;height:18px;flex:none}
+  .mobile-layout-picker button span{display:block;font-size:10px;white-space:nowrap}
+  .mobile-layout-picker button small{display:none}
+
+  /* 1. Balanced: table first, then all game actions. */
+  .mobile-layout-1>.hero{padding-bottom:22px}
+
+  /* 2. Search-first: input and primary action appear before the table. */
+  .mobile-layout-2>.hero{padding-bottom:14px}
+  .mobile-layout-2>.current-teams{order:4;margin:4px 0 0;padding:12px;border:1px solid #3b4664;background:#111a31}
+  .mobile-layout-2>.search{order:5;margin:12px 0 20px;max-width:none}
+  .mobile-layout-2>.board{order:6}
+  .mobile-layout-2>.game-status{order:7;margin-top:14px}
+  .mobile-layout-2>.search-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .mobile-layout-2>.search-input{grid-column:1/-1}
+  .mobile-layout-2>.search .reset,.mobile-layout-2>.search .roster-button,.mobile-layout-2>.search .team-select{min-width:0;padding:8px 4px;font-size:11px}
+
+  /* 3. Docked actions: search stays at the bottom edge for thumb access. */
+  .mobile-layout-3>.board{order:4}
+  .mobile-layout-3>.game-status{order:5}
+  .mobile-layout-3>.current-teams{order:6;margin-top:2px}
+  .mobile-layout-3>.search{order:8;position:sticky;bottom:0;z-index:5;margin:12px -16px -42px;padding:10px 16px 14px;background:#0b1020;border-top:1px solid #3b4664}
+  .mobile-layout-3>.search-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .mobile-layout-3>.search-input{grid-column:1/-1}
+  .mobile-layout-3>.search .reset,.mobile-layout-3>.search .roster-button,.mobile-layout-3>.search .team-select{min-width:0;padding:8px 4px;font-size:11px}
+  body.light-theme .mobile-layout-3>.search{background:#f4f7fb;border-color:#c8d1e0}
+
+  /* 4. Card layout: game details become a compact control card above results. */
+  .mobile-layout-4>.hero{padding-bottom:12px}
+  .mobile-layout-4>.game-status{order:4;margin:0;padding:13px 14px;border:1px solid #3b4664;background:#111a31}
+  .mobile-layout-4>.current-teams{order:5;margin:0;padding:0 14px 13px;border:1px solid #3b4664;border-top:0;background:#111a31}
+  .mobile-layout-4>.search{order:6;margin:0;padding:13px 14px 14px;border:1px solid #3b4664;border-top:0;background:#111a31;max-width:none}
+  .mobile-layout-4>.search-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .mobile-layout-4>.search-input{grid-column:1/-1}
+  .mobile-layout-4>.search .reset{grid-column:1/-1}
+  .mobile-layout-4>.search .roster-button,.mobile-layout-4>.search .team-select{min-width:0;padding:8px 4px;font-size:12px}
+  .mobile-layout-4>.board{order:7;margin-top:20px}
+  body.light-theme .mobile-layout-4>.game-status,body.light-theme .mobile-layout-4>.current-teams,body.light-theme .mobile-layout-4>.search{border-color:#c8d1e0;background:#fff}
+
+  /* 5. Dense utility bar: table is followed by a four-action grid. */
+  .mobile-layout-5>.hero{padding-bottom:14px}
+  .mobile-layout-5>.board{order:4}
+  .mobile-layout-5>.search{order:5;margin:12px 0 0;max-width:none}
+  .mobile-layout-5>.search-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .mobile-layout-5>.search-input{grid-column:1/-1}
+  .mobile-layout-5>.search .reset,.mobile-layout-5>.search .roster-button,.mobile-layout-5>.search .team-select{min-width:0;min-height:34px;padding:7px 5px;font-size:11px}
+  .mobile-layout-5>.game-status{order:6;margin-top:14px}
+  .mobile-layout-5>.current-teams{order:7;padding-top:10px;border-top:1px solid #303b55}
+}
+
+/* The action buttons intentionally live outside the input area so each mobile
+   concept can place them independently. */
+.game-actions{display:flex;max-width:600px;gap:10px;margin:-16px 0 28px}.game-actions .reset,.game-actions .team-select,.game-actions .roster-button{height:36px;display:inline-flex;align-items:center;justify-content:center}.game-actions .reset{border:0;border-radius:99px;background:#e9edff;color:#152142;padding:9px 14px;cursor:pointer;font-size:13px;font-weight:700;white-space:nowrap}.game-actions .reset:disabled{opacity:.45;cursor:not-allowed}body.light-theme .game-actions .reset{background:#263a70;color:#fff}
+
+@media(max-width:600px){
+  .app>.game-actions{order:8}
+  .app>.answer{order:9}
+  .game-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));max-width:none;margin:0;gap:7px}
+  .game-actions .reset,.game-actions .team-select,.game-actions .roster-button{min-width:0;height:36px;padding:7px 4px;font-size:11px;white-space:normal}
+
+  /* 1. Standard: actions stay after searching, separated from the input. */
+  .mobile-layout-1>.search{margin-bottom:14px}
+
+  /* 2. Quick start: frequent game actions sit directly under the title. */
+  .mobile-layout-2>.game-actions{order:4;margin:0 0 14px}
+  .mobile-layout-2>.current-teams{order:5}
+  .mobile-layout-2>.search{order:6}
+  .mobile-layout-2>.board{order:7}
+  .mobile-layout-2>.game-status{order:8}
+  .mobile-layout-2>.search-row{display:block}
+
+  /* 3. One-hand mode: only the action bar is docked; input remains in content. */
+  .mobile-layout-3>.search{order:7;position:static;margin:16px 0 12px;padding:0;border:0;background:transparent}
+  .mobile-layout-3>.search-row{display:block}
+  .mobile-layout-3>.game-actions{order:8;position:sticky;bottom:0;z-index:5;margin:0 -16px -42px;padding:10px 16px 14px;background:#0b1020;border-top:1px solid #3b4664}
+  body.light-theme .mobile-layout-3>.game-actions{background:#f4f7fb;border-color:#c8d1e0}
+
+  /* 4. Control card: actions are a distinct middle row of the game card. */
+  .mobile-layout-4>.game-status{order:4}
+  .mobile-layout-4>.game-actions{order:5;padding:0 14px 12px;border-inline:1px solid #3b4664;background:#111a31}
+  .mobile-layout-4>.current-teams{order:6}
+  .mobile-layout-4>.search{order:7}
+  .mobile-layout-4>.board{order:8}
+  .mobile-layout-4>.search-row{display:block}
+  body.light-theme .mobile-layout-4>.game-actions{border-color:#c8d1e0;background:#fff}
+
+  /* 5. Utility header: actions lead, table follows, and search is last. */
+  .mobile-layout-5>.game-actions{order:4;margin:0 0 14px}
+  .mobile-layout-5>.board{order:5}
+  .mobile-layout-5>.game-status{order:6}
+  .mobile-layout-5>.current-teams{order:7}
+  .mobile-layout-5>.search{order:8;margin-top:16px}
+  .mobile-layout-5>.search-row{display:block}
+}
+
+/* Independent mobile actions: each action has a meaningful place instead of
+   forming a second row attached to the search field. */
+.game-action{height:36px;border:1px solid #3b4664;border-radius:99px;background:transparent;color:#dce4ff;padding:9px 14px;cursor:pointer;font-size:13px;white-space:nowrap}.game-action+.game-action{margin-left:7px}.action-new{border:0;background:#e9edff;color:#152142;font-weight:700}.action-roster{border-color:#7188d6;background:#202e59;color:#e8edff}.game-action:disabled{opacity:.45;cursor:not-allowed}body.light-theme .game-action{border-color:#c8d1e0;background:#fff;color:#33415d}body.light-theme .action-new{background:#263a70;color:#fff}body.light-theme .action-roster{border-color:#526fbe;background:#e6edff;color:#263a70}
+.hero-title-row{display:flex;align-items:flex-end;gap:16px}.hero-title-row .action-new{margin-bottom:7px}
+.hero-title-row h1{flex:none}.hero-title-row .action-new{display:grid;place-items:center;width:38px;height:38px;padding:0;border-radius:50%}.hero-title-row .action-new span{font:500 25px/1 'DM Mono',monospace}.hero-title-row .action-teams{margin-bottom:7px;margin-left:auto}
+.hero .game-status{max-width:none;margin:14px 0 0}.hero .game-status>p{margin-bottom:0}
+.answer-modal .answer{margin:22px 0 0}.answer-modal .result-copy{margin-bottom:0}
+.answer-modal .answer span+span{display:block;margin-top:3px}
+.answer-modal .modal-header h2{font-size:20px;line-height:1.35;letter-spacing:-.04em}
+.result-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:20px}.result-actions button{min-height:44px;border-radius:4px;padding:10px;cursor:pointer;font-size:13px;font-weight:700}.result-new-game{border:0;background:#e9edff;color:#152142}.result-new-game:disabled{opacity:.45;cursor:not-allowed}.result-team-select{border:1px solid #7188d6;background:transparent;color:#dce4ff}body.light-theme .result-new-game{background:#263a70;color:#fff}body.light-theme .result-team-select{border-color:#526fbe;color:#263a70}
+
+/* Match the game-setting choices in the modal to the main setup screen. */
+.modal-mode-grid{gap:16px;margin-top:22px}.modal-mode-grid::before,.modal-setting-title{display:none}.modal-staff-toggle{margin-top:10px;padding:0;border:0}.modal-mode-grid,.modal-staff-toggle .staff-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.modal-mode-grid button,.modal-staff-toggle .staff-options button{padding:18px;font-size:17px;font-weight:900}.modal-mode-grid span,.modal-staff-toggle .staff-options button span{margin-top:6px;font-size:12px;font-weight:500}
+
+.modal-mode-grid::before{display:block;content:'출제 범위';grid-column:1/-1;font-size:13px;font-weight:700}.modal-setting-title{display:block;margin-bottom:10px;font-size:13px;font-weight:700}.modal-mode-grid button,.modal-staff-toggle .staff-options button{padding:16px;font-size:15px;font-weight:700}.modal-mode-grid span,.modal-staff-toggle .staff-options button span{margin-top:5px;font-size:11px}
+.modal-mode-grid button.selected,.modal-staff-toggle .staff-options button.selected{border-color:#9db2ff;background:#26396f;color:#fff}body.light-theme .modal-mode-grid button.selected,body.light-theme .modal-staff-toggle .staff-options button.selected{border-color:#526fbe;background:#e6edff;color:#17213a}
+body.light-theme .modal-mode-grid button,body.light-theme .modal-staff-toggle .staff-options button{border-color:#c8d1e0;background:#f8faff;color:#17213a}
+.roster-modal{display:flex;flex-direction:column;height:min(680px,calc(100dvh - 40px));overflow:hidden}.roster-modal>p{flex:none;margin:16px 0 0}.roster-modal>p strong{color:#dce4ff}.roster-modal>p i{margin-left:8px}.roster-modal .player-roster{display:flex;min-height:0;flex:1;flex-direction:column}.roster-modal .roster-team-selector{flex:none}.roster-modal .roster-team{min-height:0;flex:1;overflow-y:auto}.roster-team-selector button{display:inline-flex;align-items:center;justify-content:center;width:58px;height:34px;padding:6px 4px}.light-theme .roster-modal>p strong{color:#263551}
+.roster-guide{display:grid;flex:none;gap:3px;margin:16px 0 0;color:#68748a;font-size:12px;line-height:1.45}.roster-guide span:first-child{color:#33415d;font-weight:700}.roster-legend{display:flex;align-items:center;gap:5px;margin-top:3px;color:#526177}.roster-legend i{display:inline-block;width:8px;height:8px;margin-left:5px;border-radius:50%;background:#78d49b}.roster-legend i:first-child{margin-left:0}.roster-legend i.futures{background:#8ca9ff}body:not(.light-theme) .roster-guide{color:#a7b0c6}body:not(.light-theme) .roster-guide span:first-child{color:#dce4ff}body:not(.light-theme) .roster-legend{color:#bdc7de}
+
+@media(max-width:600px){
+  .app>.game-action{display:flex;align-items:center;justify-content:center;min-height:36px;margin:0;font-size:12px}
+  .hero-title-row{width:100%;align-items:center;justify-content:flex-start;gap:5px}
+  .hero-title-row .action-new{flex:none;width:30px;height:30px;margin:0;padding:0}
+  .hero-title-row .action-new span{font-size:21px}
+  .hero-title-row .action-teams{flex:none;margin:0 0 0 auto;padding-inline:11px;font-size:11px}
+  .roster-modal{height:calc(100dvh - 40px)}
+  .roster-team-selector{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+  .roster-team-selector button{width:100%}
+
+  /* 1. New game is a primary header action; roster and team setting frame data. */
+  .mobile-layout-1>.action-new{order:4;margin:0 0 16px}
+  .mobile-layout-1>.board{order:5}
+  .mobile-layout-1>.game-status{order:6}
+  .mobile-layout-1>.action-roster{order:7;align-self:flex-start;margin:2px 0 12px}
+  .mobile-layout-1>.current-teams{order:8}
+  .mobile-layout-1>.action-teams{order:9;align-self:flex-end;margin:-39px 0 15px}
+  .mobile-layout-1>.search{order:10}
+
+  /* 2. Search-first keeps restart at the top, with reference/settings after results. */
+  .mobile-layout-2>.action-new{order:4;align-self:flex-end;margin:-2px 0 14px}
+  .mobile-layout-2>.current-teams{order:5}
+  .mobile-layout-2>.search{order:6}
+  .mobile-layout-2>.board{order:7}
+  .mobile-layout-2>.game-status{order:8}
+  .mobile-layout-2>.action-roster{order:9;align-self:flex-start;margin-top:2px}
+  .mobile-layout-2>.action-teams{order:10;align-self:flex-end;margin-top:-36px}
+
+  /* 3. New round stays within reach at the bottom; settings sit by their context. */
+  .mobile-layout-3>.board{order:4}
+  .mobile-layout-3>.game-status{order:5}
+  .mobile-layout-3>.action-roster{order:6;align-self:flex-start;margin:0 0 12px}
+  .mobile-layout-3>.current-teams{order:7}
+  .mobile-layout-3>.action-teams{order:8;align-self:flex-end;margin:-39px 0 16px}
+  .mobile-layout-3>.search{order:9}
+  .mobile-layout-3>.action-new{order:10;position:static;width:100%;min-height:48px;margin:12px 0 0;border-radius:4px;background:#e9edff}
+  body.light-theme .mobile-layout-3>.action-new{background:#263a70;color:#fff}
+
+  /* 4. Each action becomes a row of the information card, not a search control. */
+  .mobile-layout-4>.game-status{order:4}
+  .mobile-layout-4>.current-teams{order:5}
+  .mobile-layout-4>.action-teams{order:6;margin:-43px 14px 13px auto}
+  .mobile-layout-4>.search{order:7}
+  .mobile-layout-4>.board{order:8}
+  .mobile-layout-4>.action-roster{order:9;align-self:flex-start;margin-top:14px}
+  .mobile-layout-4>.action-new{order:10;width:100%;margin-top:12px;border-radius:4px;min-height:48px}
+
+  /* 5. Utilities are intentionally distributed around the play flow. */
+  .mobile-layout-5>.action-new{order:4;width:100%;margin-bottom:14px;border-radius:4px;min-height:46px}
+  .mobile-layout-5>.current-teams{order:5}
+  .mobile-layout-5>.action-teams{order:6;align-self:flex-end;margin:-39px 0 13px}
+  .mobile-layout-5>.board{order:7}
+  .mobile-layout-5>.action-roster{order:8;align-self:flex-start;margin:14px 0 0}
+  .mobile-layout-5>.game-status{order:9}
+  .mobile-layout-5>.search{order:10}
+}
+
+/* Mobile play dock: the layout selector sits directly above a persistent
+   player search field. Suggestions continue to open upward from the field. */
+@media(max-width:600px){
+  .app{padding-bottom:158px}
+  .app>.search{
+    position:fixed !important;right:0;bottom:0;left:0;z-index:12;
+    max-width:none;margin:0 !important;padding:8px 16px 10px;
+    background:#0b1020;border-top:1px solid #3b4664;
+  }
+  .app>.search-row{display:block !important}
+  .app>.search-input{display:block}
+  .app>.mobile-layout-picker{
+    position:fixed;right:0;bottom:69px;left:0;z-index:13;
+    margin:0;padding:8px 16px 7px;
+    background:#0b1020;border-top:1px solid #3b4664;
+    box-shadow:0 -8px 20px #0003;
+  }
+  .mobile-layout-picker>span{font-size:11px}
+  .mobile-layout-picker button{min-height:31px;padding-block:6px}
+  .search-input .suggestions{max-height:min(260px,calc(100vh - 180px))}
+  body.light-theme .app>.search,body.light-theme .app>.mobile-layout-picker{background:#f4f7fb;border-color:#c8d1e0}
+}
+
+/* Single mobile layout. The player search remains available at the bottom. */
+@media(max-width:600px){
+  .app{height:100dvh;min-height:100dvh;padding-bottom:80px;overflow:hidden}
+  .team-picker .team-list,.modal-team-picker .team-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  .team-picker .team-list button,.modal-team-picker .team-list button{width:100%;min-width:0;min-height:34px;padding:5px 2px;font-size:12px}
+  .app>.hero{order:2;padding-bottom:12px}
+  .app>.board{order:3}
+  .app>.game-status{order:4}
+  .app>.current-teams{display:none}
+  .app>.action-teams{order:5;align-self:flex-end;margin:2px 0 15px}
+  .app>.answer{order:8}
+  .app>.search{order:9}
+  .app>.search{position:fixed !important;right:0;bottom:0;left:0;z-index:12;max-width:none;margin:0 !important;padding:0 16px 10px;background:transparent;border:0}
+  .app>.search .search-row{display:grid !important;grid-template-columns:minmax(0,4fr) minmax(58px,1fr);align-items:center;gap:8px}
+  .app>.search .search-input{display:block;min-width:0;order:1}
+  .app>.search input{background:transparent}
+  .app>.search .action-roster{order:2;width:100%;height:52px;margin:0;padding-inline:6px;border-radius:4px}
+  .search-input .suggestions{max-height:min(260px,calc(100vh - 90px))}
+  body.light-theme .app>.search{background:transparent;border-color:transparent}
+}
+
+@media(max-width:600px){
+  .board{display:flex;flex:1;min-height:0;flex-direction:column;overflow:hidden;border-bottom:0}
+  .board .header{flex:none;background:#0b1020}
+  .board-rows{flex:1;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+  .board-rows::-webkit-scrollbar{display:block;width:4px}
+  .board-rows::-webkit-scrollbar-thumb{border-radius:99px;background:#465574}
+  body.light-theme .board{border-color:#dbe2ec}
+  body.light-theme .board .header{background:#f4f7fb}
+}

@@ -2,6 +2,7 @@ export type Mode = 'REGULAR' | 'ALL'
 export type Status = 'MATCH' | 'MISMATCH' | 'UP' | 'DOWN'
 
 export interface Player { id: number; name: string; team: string; position: string; birthYear: number }
+export interface RosterPlayer { name: string; team: string; position: string; rosterLevel: 'REGULAR' | 'FUTURES' }
 export interface PickedPlayer extends Player { backNo: number; throwingHand: string; battingSide: string; age: number; height: number; weight: number }
 export interface Guess { picked: PickedPlayer; compare: Record<'team' | 'backNo' | 'position' | 'throwingHand' | 'battingSide' | 'birthYear' | 'height' | 'weight', { status: Status }>; isCorrect: boolean }
 export interface GameState { mode: Mode; includeStaff: boolean; teams: string[]; rosterDate: string | null; playerCount: number }
@@ -27,6 +28,7 @@ function isApiEnvelope(value: unknown): value is { success: boolean; message?: s
 
 export const api = {
   teams: (mode: Mode) => request<string[]>(`/kbo/players/teams?mode=${mode}`),
+  players: (mode: Mode, includeStaff: boolean) => request<RosterPlayer[]>(`/kbo/players?${new URLSearchParams({ mode, includeStaff: String(includeStaff) }).toString()}`),
   search: (query: string, mode: Mode, includeStaff: boolean, teams: string[]) => request<Player[]>(`/kbo/players/search?${new URLSearchParams({ query, mode, includeStaff: String(includeStaff), teams: teams.join(',') }).toString()}`),
   create: (mode: Mode, includeStaff: boolean, teams: string[]) => request<GameStart>(`/kbo/games?${new URLSearchParams({ mode, includeStaff: String(includeStaff), teams: teams.join(',') }).toString()}`, { method: 'POST' }),
   state: (gameId: string) => request<GameState>(`/kbo/games/${encodeURIComponent(gameId)}/state`),
