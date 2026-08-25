@@ -218,6 +218,12 @@ export default function App() {
   }, [activePlayerIndex])
 
   useEffect(() => {
+    if (mode && !finished && !isSubmitting && window.matchMedia('(max-width: 600px)').matches) {
+      searchInputRef.current?.focus()
+    }
+  }, [gameId, mode, finished, isSubmitting])
+
+  useEffect(() => {
     const focusSearchOnTyping = (event: KeyboardEvent) => {
       if (finished || !mode || event.ctrlKey || event.metaKey || event.altKey) return
       if (event.key.length !== 1 && event.key !== 'Process') return
