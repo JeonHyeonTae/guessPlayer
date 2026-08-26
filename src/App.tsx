@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { api, type Guess, type Mode, type PickedPlayer, type Player, type RosterPlayer, type Status } from './api'
 
 const MAX_TRIES = 9
@@ -16,6 +16,13 @@ function isDailyUpdateWindow(now = new Date()) {
 
 function StaffToggle({ includeStaff, onChange, modal = false }: { includeStaff: boolean; onChange: (value: boolean) => void; modal?: boolean }) {
   return <div className={modal ? 'modal-staff-toggle' : 'staff-toggle'}>{modal && <b className="modal-setting-title">출제 대상</b>}<div className="staff-options"><button className={!includeStaff ? 'selected' : undefined} onClick={() => onChange(false)}>선수만<span>감독·코치 제외</span></button><button className={includeStaff ? 'selected' : undefined} onClick={() => onChange(true)}>감독·코치 포함<span>스태프까지 함께 출제</span></button></div></div>
+}
+
+function ShareMenu({ teams, isOpen, isCopied, onToggle, onShare }: { teams: string[]; isOpen: boolean; isCopied: boolean; onToggle: () => void; onShare: (team: string) => void }) {
+  return <div className="share-menu">
+    <button className="share-button" onClick={onToggle} aria-label="구단별 게임 링크 공유하기" aria-expanded={isOpen} title={isCopied ? '복사됐습니다' : '게임 링크 공유하기'}><span className="share-figure" aria-hidden="true"><i>?</i><span>KBO</span><i>?</i></span><b>{isCopied ? '복사됨' : '공유'}</b></button>
+    {isOpen && <div className="share-menu-list" role="menu" aria-label="공유할 구단 선택">{teams.length > 0 ? teams.map(team => <button key={team} role="menuitem" onClick={() => onShare(team)}>{team}</button>) : <span>구단 목록을 불러오는 중…</span>}</div>}
+  </div>
 }
 
 function PlayerRoster({ players }: { players: RosterPlayer[] }) {
@@ -62,6 +69,7 @@ export default function App() {
   const [includeStaff, setIncludeStaff] = useState(false)
   const [gameIncludesStaff, setGameIncludesStaff] = useState(false)
   const [teamOptions, setTeamOptions] = useState<string[]>([])
+  const [shareTeams, setShareTeams] = useState<string[]>([])
   const [selectedTeams, setSelectedTeams] = useState<string[]>([])
   const [gameTeams, setGameTeams] = useState<string[]>([])
   const [isTeamPickerOpen, setIsTeamPickerOpen] = useState(false)
@@ -72,6 +80,7 @@ export default function App() {
   const [isUpdateWindow, setIsUpdateWindow] = useState(isDailyUpdateWindow)
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [isShareCopied, setIsShareCopied] = useState(false)
+  const [isShareMenuOpen, setIsShareMenuOpen] = useState(false)
   const [isResultCopied, setIsResultCopied] = useState(false)
   const [query, setQuery] = useState('')
   const [players, setPlayers] = useState<Player[]>([])
@@ -112,8 +121,9 @@ export default function App() {
     }
   }
 
-  async function copyShareLink() {
-    await copyToClipboard(GAME_URL)
+  async function copyShareLink(team: string) {
+    await copyToClipboard(new URL(encodeURIComponent(team), GAME_URL).toString())
+    setIsShareMenuOpen(false)
     setIsShareCopied(true)
     window.setTimeout(() => setIsShareCopied(false), 1800)
   }
@@ -196,6 +206,8 @@ export default function App() {
   async function selectPlayer(player: Player) {
     if (!gameId || !mode || gameTeams.length === 0 || finished || guesses.length >= MAX_TRIES || submittingRef.current) return
     const gameVersion = gameVersionRef.current
+    // Keep the mobile keyboard closed after a suggestion is chosen.
+    searchInputRef.current?.blur()
     submittingRef.current = true
     setIsSubmitting(true)
     setPlayers([])
@@ -255,9 +267,17 @@ export default function App() {
       setGameTeams(state.teams)
       setMetaFromState(state)
     }).catch(() => {
-      setMessage('게임을 찾을 수 없습니다. 새 게임을 시작해주세요.')
-      setMeta('게임을 찾을 수 없습니다.')
+      if (gameVersion !== gameVersionRef.current) return
+      window.history.replaceState(null, '', '/')
+      setGameId(null)
+      setMode(null)
     })
+  }, [gameId])
+
+  useEffect(() => {
+    if (!gameId && /^\/game\/?$/.test(window.location.pathname)) {
+      window.history.replaceState(null, '', '/')
+    }
   }, [gameId])
 
   useEffect(() => {
@@ -268,6 +288,10 @@ export default function App() {
   }, [setupMode])
 
   useEffect(() => {
+    api.teams('REGULAR').then(setShareTeams).catch(() => setShareTeams([]))
+  }, [])
+
+  useEffect(() => {
     if (!canSearch || !mode) { setPlayers([]); setActivePlayerIndex(-1); return }
     const timer = window.setTimeout(() => api.search(query.trim(), mode, gameIncludesStaff, gameTeams).then(results => {
       setPlayers(results)
@@ -276,30 +300,21 @@ export default function App() {
     return () => window.clearTimeout(timer)
   }, [query, mode, gameIncludesStaff, gameTeams, canSearch])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (guesses.length === 0) return
-    let secondFrame: number | undefined
-    const firstFrame = window.requestAnimationFrame(() => {
-      secondFrame = window.requestAnimationFrame(() => {
-        const rows = boardRowsRef.current
-        rows?.scrollTo({ top: rows.scrollHeight, behavior: 'smooth' })
-      })
-    })
-    return () => {
-      window.cancelAnimationFrame(firstFrame)
-      if (secondFrame) window.cancelAnimationFrame(secondFrame)
-    }
-  }, [guesses.length, answer, message])
+    const rows = boardRowsRef.current
+    if (rows) rows.scrollTop = rows.scrollHeight
+  }, [guesses.length])
 
   useEffect(() => {
     activePlayerRef.current?.scrollIntoView({ block: 'nearest' })
   }, [activePlayerIndex])
 
   useEffect(() => {
-    if (mode && !finished && !isSubmitting && window.matchMedia('(max-width: 600px)').matches) {
+    if (mode && !finished && window.matchMedia('(max-width: 600px)').matches) {
       searchInputRef.current?.focus()
     }
-  }, [gameId, mode, finished, isSubmitting])
+  }, [gameId, mode, finished])
 
   useEffect(() => {
     const focusSearchOnTyping = (event: KeyboardEvent) => {
@@ -315,13 +330,13 @@ export default function App() {
 
   if (isUpdateWindow) return <main className="daily-update"><section><p className="eyebrow">DAILY ROSTER UPDATE</p><h1>선수단 정보를<br />업데이트하고 있습니다.</h1><p>매일 오후 4:00~4:05에는 최신 선수 정보 반영을 위해 잠시 이용할 수 없습니다.</p></section></main>
 
-  if (!mode) return <main className="landing"><button className="share-button" onClick={copyShareLink} aria-label="게임 링크 공유하기" title={isShareCopied ? '복사됐습니다' : '게임 링크 공유하기'}><span className="share-figure" aria-hidden="true"><i>?</i><span>KBO</span><i>?</i></span><b>{isShareCopied ? '복사됨' : '공유'}</b></button><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button><section><p className="eyebrow">KBO PLAYER GUESS</p><h1>KBO 선수를<br />맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} /><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0 || isStartingGame} onClick={() => start(setupMode)}>{isStartingGame ? '게임 시작 중…' : '선택한 구단으로 시작하기'}</button>{message && <div className="notice">{message}</div>}</section></main>
+  if (!mode) return <main className="landing"><ShareMenu teams={shareTeams} isOpen={isShareMenuOpen} isCopied={isShareCopied} onToggle={() => setIsShareMenuOpen(value => !value)} onShare={copyShareLink} /><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button><section><p className="eyebrow">KBO PLAYER GUESS</p><h1>KBO 선수를<br />맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} /><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0 || isStartingGame} onClick={() => start(setupMode)}>{isStartingGame ? '게임 시작 중…' : '선택한 구단으로 시작하기'}</button>{message && <div className="notice">{message}</div>}</section></main>
 
   return (
     <main className="app">
       <header>
         <button className="brand" onClick={returnToSetup}>KBO GUESS</button>
-        <div className="header-actions"><button className="share-button" onClick={copyShareLink} aria-label="게임 링크 공유하기" title={isShareCopied ? '복사됐습니다' : '게임 링크 공유하기'}><span className="share-figure" aria-hidden="true"><i>?</i><span>KBO</span><i>?</i></span><b>{isShareCopied ? '복사됨' : '공유'}</b></button><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button></div>
+        <div className="header-actions"><ShareMenu teams={shareTeams} isOpen={isShareMenuOpen} isCopied={isShareCopied} onToggle={() => setIsShareMenuOpen(value => !value)} onShare={copyShareLink} /><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button></div>
       </header>
       <section className="hero"><p className="eyebrow">{mode === 'REGULAR' ? 'REGULAR ROSTER' : 'ALL ROSTER'}</p><div className="hero-title-row"><h1>선수 맞추기</h1><button className="game-action action-new" disabled={isStartingGame} onClick={() => start(mode)} aria-label="새 게임 시작" title="새 게임 시작"><span aria-hidden="true">↻</span></button><button className="game-action action-teams" onClick={() => setIsTeamPickerOpen(true)}>구단 선택</button></div><div className="game-status"><p>{meta}</p>{message && !finished && <div className="notice">{message}</div>}</div></section>
       <section className="board">
