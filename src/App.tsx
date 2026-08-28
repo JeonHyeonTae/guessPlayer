@@ -9,9 +9,19 @@ const fields: Array<[keyof Guess['compare'], string, keyof PickedPlayer]> = [
 const statusText: Record<Status, string> = { MATCH: '', MISMATCH: '', UP: '↑', DOWN: '↓' }
 const resultEmoji: Record<Status, string> = { MATCH: '🟩', MISMATCH: '⬜️', UP: '🟨', DOWN: '🟨' }
 const positionOrder = ['감독', '코치', '투수', '포수', '내야수', '외야수']
+const shareTeamPaths = [
+  { path: 'KT', aliases: ['kt'] }, { path: 'NC', aliases: ['nc'] }, { path: 'SSG', aliases: ['ssg'] },
+  { path: '기아', aliases: ['기아', 'kia'] }, { path: '두산', aliases: ['두산'] }, { path: '롯데', aliases: ['롯데'] },
+  { path: '삼성', aliases: ['삼성'] }, { path: '엘지', aliases: ['엘지', 'lg'] }, { path: '키움', aliases: ['키움'] }, { path: '한화', aliases: ['한화'] },
+]
 
 function isDailyUpdateWindow(now = new Date()) {
   return now.getHours() === 16 && now.getMinutes() < 5
+}
+
+function sharePathForTeam(team: string) {
+  const normalized = team.toLowerCase().replaceAll(/\s/g, '')
+  return shareTeamPaths.find(({ aliases }) => aliases.some(alias => normalized.includes(alias)))?.path ?? team.trim()
 }
 
 function StaffToggle({ includeStaff, onChange, modal = false }: { includeStaff: boolean; onChange: (value: boolean) => void; modal?: boolean }) {
@@ -122,7 +132,7 @@ export default function App() {
   }
 
   async function copyShareLink(team: string) {
-    await copyToClipboard(new URL(encodeURIComponent(team), GAME_URL).toString())
+    await copyToClipboard(new URL(encodeURIComponent(sharePathForTeam(team)), GAME_URL).toString())
     setIsShareMenuOpen(false)
     setIsShareCopied(true)
     window.setTimeout(() => setIsShareCopied(false), 1800)

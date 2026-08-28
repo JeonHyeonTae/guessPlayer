@@ -1,5 +1,14 @@
 {
   "rewrites": [
+    { "source": "/KT", "destination": "/KT/index.html" },
+    { "source": "/NC", "destination": "/NC/index.html" },
+    { "source": "/SSG", "destination": "/SSG/index.html" },
+    { "source": "/기아", "destination": "/기아/index.html" },
+    { "source": "/두산", "destination": "/두산/index.html" },
+    { "source": "/롯데", "destination": "/롯데/index.html" },
+    { "source": "/삼성", "destination": "/삼성/index.html" },
+    { "source": "/엘지", "destination": "/엘지/index.html" },
+    { "source": "/키움", "destination": "/키움/index.html" },
     { "source": "/한화", "destination": "/한화/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
