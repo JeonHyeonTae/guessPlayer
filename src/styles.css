@@ -178,11 +178,12 @@ body.light-theme .share-button{border-color:#c8d1e0;background:#fff;color:#33415
    forming a second row attached to the search field. */
 .game-action{height:36px;border:1px solid #3b4664;border-radius:99px;background:transparent;color:#dce4ff;padding:9px 14px;cursor:pointer;font-size:13px;white-space:nowrap}.game-action+.game-action{margin-left:7px}.action-new{border:0;background:#e9edff;color:#152142;font-weight:700}.action-roster{border-color:#7188d6;background:#202e59;color:#e8edff}.game-action:disabled{opacity:.45;cursor:not-allowed}body.light-theme .game-action{border-color:#c8d1e0;background:#fff;color:#33415d}body.light-theme .action-new{background:#263a70;color:#fff}body.light-theme .action-roster{border-color:#526fbe;background:#e6edff;color:#263a70}
 .hero-title-row{display:flex;align-items:flex-end;gap:16px}.hero-title-row .action-new{margin-bottom:7px}
-.hero-title-row h1{flex:none}.hero-title-row .action-new{display:grid;place-items:center;width:38px;height:38px;padding:0;border-radius:50%}.hero-title-row .action-new span{font:500 25px/1 'DM Mono',monospace}.hero-title-row .action-teams{margin-bottom:7px;margin-left:auto}
+.hero-title-row h1{flex:none}.hero-title-row .action-new{position:relative;display:block;width:38px;height:38px;padding:0;border-radius:50%}.hero-title-row .action-new span{position:absolute;inset:0;display:grid;place-items:center;font:500 25px/1 'DM Mono',monospace;transform:translate(1px,-1px)}.hero-title-row .action-teams{margin-bottom:7px;margin-left:auto}
 .hero .game-status{max-width:none;margin:14px 0 0}.hero .game-status>p{margin-bottom:0}
 .answer-modal .answer{margin:22px 0 0}.answer-modal .result-copy{margin-bottom:0}
 .answer-modal .answer span+span{display:block;margin-top:3px}
 .answer-modal .modal-header h2{font-size:20px;line-height:1.35;letter-spacing:-.04em}
+.answer-modal .modal-header>button{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;margin:-8px -8px 0 0;padding:0}
 .result-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:20px}.result-actions button{min-height:44px;border-radius:4px;padding:10px;cursor:pointer;font-size:13px;font-weight:700}.result-new-game{border:0;background:#e9edff;color:#152142}.result-new-game:disabled{opacity:.45;cursor:not-allowed}.result-team-select{border:1px solid #7188d6;background:transparent;color:#dce4ff}body.light-theme .result-new-game{background:#263a70;color:#fff}body.light-theme .result-team-select{border-color:#526fbe;color:#263a70}
 
 /* Match the game-setting choices in the modal to the main setup screen. */
