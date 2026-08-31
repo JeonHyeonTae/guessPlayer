@@ -31,7 +31,7 @@ function StaffToggle({ includeStaff, onChange, modal = false }: { includeStaff: 
 function ShareMenu({ teams, isOpen, isCopied, onToggle, onShare }: { teams: string[]; isOpen: boolean; isCopied: boolean; onToggle: () => void; onShare: (team: string) => void }) {
   return <div className="share-menu">
     <button className="share-button" onClick={onToggle} aria-label="구단별 게임 링크 공유하기" aria-expanded={isOpen} title={isCopied ? '복사됐습니다' : '게임 링크 공유하기'}><span className="share-figure" aria-hidden="true"><i>?</i><span>KBO</span><i>?</i></span><b>{isCopied ? '복사됨' : '공유'}</b></button>
-    {isOpen && <div className="share-menu-list" role="menu" aria-label="공유할 구단 선택">{teams.length > 0 ? teams.map(team => <button key={team} role="menuitem" onClick={() => onShare(team)}>{team}</button>) : <span>구단 목록을 불러오는 중…</span>}</div>}
+    {isOpen && <div className="share-menu-list" role="menu" aria-label="공유할 구단 선택"><p className="share-menu-title">공유할 구단을 선택하세요</p>{teams.length > 0 ? teams.map(team => <button key={team} role="menuitem" onClick={() => onShare(team)}>{team}</button>) : <span>구단 목록을 불러오는 중…</span>}</div>}
   </div>
 }
 
