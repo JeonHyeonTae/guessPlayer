@@ -207,7 +207,8 @@ body.light-theme .modal-mode-grid button,body.light-theme .modal-staff-toggle .s
   .board-rows::-webkit-scrollbar{width:6px}
   .board-rows::-webkit-scrollbar-thumb{border-radius:99px;background:#465574}
 }
-@media(max-width:600px){.ad-banner{min-height:70px;margin:12px 0 16px}.ad-banner .adsbygoogle{min-height:70px}}
+.ad-banner:not(.side-ad):not(:has(.adsbygoogle[data-ad-status="filled"])){height:0;min-height:0;margin:0;overflow:hidden}
+@media(max-width:600px){.ad-banner{min-height:70px;margin:12px 0 16px}.ad-banner .adsbygoogle{min-height:70px}.ad-banner:not(:has(.adsbygoogle[data-ad-status="filled"])){height:0;min-height:0;margin:0}}
 .roster-modal{display:flex;flex-direction:column;height:min(680px,calc(100dvh - 40px));overflow:hidden}.roster-modal>p{flex:none;margin:16px 0 0}.roster-modal>p strong{color:#dce4ff}.roster-modal>p i{margin-left:8px}.roster-modal .player-roster{display:flex;min-height:0;flex:1;flex-direction:column}.roster-modal .roster-team-selector{flex:none}.roster-modal .roster-team{min-height:0;flex:1;overflow-y:auto}.roster-team-selector button{display:inline-flex;align-items:center;justify-content:center;width:58px;height:34px;padding:6px 4px}.light-theme .roster-modal>p strong{color:#263551}
 .roster-guide{display:grid;flex:none;gap:3px;margin:16px 0 0;color:#68748a;font-size:12px;line-height:1.45}.roster-guide span:first-child{color:#33415d;font-weight:700}.roster-legend{display:flex;align-items:center;gap:5px;margin-top:3px;color:#526177}.roster-legend i{display:inline-block;width:8px;height:8px;margin-left:5px;border-radius:50%;background:#78d49b}.roster-legend i:first-child{margin-left:0}.roster-legend i.futures{background:#8ca9ff}body:not(.light-theme) .roster-guide{color:#a7b0c6}body:not(.light-theme) .roster-guide span:first-child{color:#dce4ff}body:not(.light-theme) .roster-legend{color:#bdc7de}
 

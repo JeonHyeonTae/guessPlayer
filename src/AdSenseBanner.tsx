@@ -24,6 +24,7 @@ function loadAdSenseScript(client: string) {
 function AdSenseUnit({ className = '' }: { className?: string }) {
   const id = useId()
   const pushedRef = useRef(false)
+  const adFormat = className.includes('side-ad') ? 'auto' : 'horizontal'
 
   useEffect(() => {
     if (!adsenseClient || pushedRef.current) return
@@ -46,7 +47,7 @@ function AdSenseUnit({ className = '' }: { className?: string }) {
         style={{ display: 'block' }}
         data-ad-client={adsenseClient}
         data-ad-slot={adsenseSlot}
-        data-ad-format="auto"
+        data-ad-format={adFormat}
         data-full-width-responsive="true"
       />
     </aside>
