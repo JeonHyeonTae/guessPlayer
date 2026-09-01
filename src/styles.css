@@ -67,6 +67,8 @@ body.light-theme .share-button{border-color:#c8d1e0;background:#fff;color:#33415
 .mobile-layout-picker{display:flex;align-items:center;gap:12px;margin:22px 0 0}.mobile-layout-picker>span{color:#a7b0c6;font-size:12px;font-weight:700;white-space:nowrap}.mobile-layout-picker>div{display:flex;gap:6px}.mobile-layout-picker button{display:grid;grid-template-columns:auto auto;column-gap:5px;align-items:center;border:1px solid #3b4664;border-radius:4px;background:#131a2d;color:#dce4ff;padding:7px 9px;cursor:pointer;text-align:left}.mobile-layout-picker button b{display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#26396f;font:500 10px 'DM Mono',monospace}.mobile-layout-picker button span{font-size:11px;font-weight:700}.mobile-layout-picker button small{display:none}.mobile-layout-picker button.selected{border-color:#9db2ff;background:#26396f;color:#fff}.mobile-layout-picker button.selected b{background:#dce7ff;color:#17213a}body.light-theme .mobile-layout-picker>span{color:#526177}body.light-theme .mobile-layout-picker button{border-color:#c8d1e0;background:#fff;color:#33415d}body.light-theme .mobile-layout-picker button.selected{border-color:#526fbe;background:#e6edff;color:#17213a}body.light-theme .mobile-layout-picker button.selected b{background:#263a70;color:#fff}
 
 @media(max-width:600px){
+  .landing{display:block}
+  .landing>section{margin:0 auto}
   .app{display:flex;flex-direction:column;padding-bottom:42px}
   .app>header{order:1}
   .app>.mobile-layout-picker{order:2}
@@ -192,6 +194,20 @@ body.light-theme .share-button{border-color:#c8d1e0;background:#fff;color:#33415
 .modal-mode-grid::before{display:block;content:'출제 범위';grid-column:1/-1;font-size:13px;font-weight:700}.modal-setting-title{display:block;margin-bottom:10px;font-size:13px;font-weight:700}.modal-mode-grid button,.modal-staff-toggle .staff-options button{padding:16px;font-size:15px;font-weight:700}.modal-mode-grid span,.modal-staff-toggle .staff-options button span{margin-top:5px;font-size:11px}
 .modal-mode-grid button.selected,.modal-staff-toggle .staff-options button.selected{border-color:#9db2ff;background:#26396f;color:#fff}body.light-theme .modal-mode-grid button.selected,body.light-theme .modal-staff-toggle .staff-options button.selected{border-color:#526fbe;background:#e6edff;color:#17213a}
 body.light-theme .modal-mode-grid button,body.light-theme .modal-staff-toggle .staff-options button{border-color:#c8d1e0;background:#f8faff;color:#17213a}
+.ad-banner{width:100%;min-height:90px;margin:18px 0 22px;overflow:hidden}.ad-banner .adsbygoogle{width:100%;min-height:90px}.landing-ad{margin-top:18px;margin-bottom:0}
+.side-ad{position:fixed;top:50%;display:block;width:160px;height:600px;min-height:600px;margin:0;transform:translateY(-50%)}.side-ad .adsbygoogle{width:160px;height:600px;min-height:600px}.side-ad-left{left:24px}.side-ad-right{right:24px}
+@media(min-width:601px){
+  .app{display:flex;height:100dvh;min-height:0;flex-direction:column;overflow:hidden;padding-bottom:16px}
+  .app>.hero{padding:12px 0 20px}
+  .app>header,.app>.hero,.app>.current-teams,.app>.search,.app>.ad-banner{flex:none}
+  .app>.ad-banner{margin-bottom:0}
+  .app>.board{display:flex;min-height:0;flex:1;flex-direction:column;overflow-x:auto;overflow-y:hidden}
+  .board>.header{flex:none}
+  .board-rows{min-height:0;max-height:none;flex:1;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+  .board-rows::-webkit-scrollbar{width:6px}
+  .board-rows::-webkit-scrollbar-thumb{border-radius:99px;background:#465574}
+}
+@media(max-width:600px){.ad-banner{min-height:70px;margin:12px 0 16px}.ad-banner .adsbygoogle{min-height:70px}}
 .roster-modal{display:flex;flex-direction:column;height:min(680px,calc(100dvh - 40px));overflow:hidden}.roster-modal>p{flex:none;margin:16px 0 0}.roster-modal>p strong{color:#dce4ff}.roster-modal>p i{margin-left:8px}.roster-modal .player-roster{display:flex;min-height:0;flex:1;flex-direction:column}.roster-modal .roster-team-selector{flex:none}.roster-modal .roster-team{min-height:0;flex:1;overflow-y:auto}.roster-team-selector button{display:inline-flex;align-items:center;justify-content:center;width:58px;height:34px;padding:6px 4px}.light-theme .roster-modal>p strong{color:#263551}
 .roster-guide{display:grid;flex:none;gap:3px;margin:16px 0 0;color:#68748a;font-size:12px;line-height:1.45}.roster-guide span:first-child{color:#33415d;font-weight:700}.roster-legend{display:flex;align-items:center;gap:5px;margin-top:3px;color:#526177}.roster-legend i{display:inline-block;width:8px;height:8px;margin-left:5px;border-radius:50%;background:#78d49b}.roster-legend i:first-child{margin-left:0}.roster-legend i.futures{background:#8ca9ff}body:not(.light-theme) .roster-guide{color:#a7b0c6}body:not(.light-theme) .roster-guide span:first-child{color:#dce4ff}body:not(.light-theme) .roster-legend{color:#bdc7de}
 
@@ -278,10 +294,12 @@ body.light-theme .modal-mode-grid button,body.light-theme .modal-staff-toggle .s
 /* Single mobile layout. The player search remains available at the bottom. */
 @media(max-width:600px){
   .app{height:100dvh;min-height:100dvh;padding-bottom:80px;overflow:hidden}
+  .app>.hero{padding-top:12px}
   .team-picker .team-list,.modal-team-picker .team-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
   .team-picker .team-list button,.modal-team-picker .team-list button{width:100%;min-width:0;min-height:34px;padding:5px 2px;font-size:12px}
   .app>.hero{order:2;padding-bottom:12px}
   .app>.board{order:3}
+  .app>.ad-banner{order:4;flex:none}
   .app>.game-status{order:4}
   .app>.current-teams{display:none}
   .app>.action-teams{order:5;align-self:flex-end;margin:2px 0 15px}
