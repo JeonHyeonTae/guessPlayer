@@ -159,8 +159,7 @@ export default function App() {
   }
 
   async function copyShareLink(team: string) {
-    const shareUrl = new URL(encodeURIComponent(sharePathForTeam(team)), GAME_URL).toString()
-    await copyToClipboard(`${shareUrl}\n#캐치크보`)
+    await copyToClipboard(new URL(encodeURIComponent(sharePathForTeam(team)), GAME_URL).toString())
     setIsShareMenuOpen(false)
     setIsShareCopied(true)
     window.setTimeout(() => setIsShareCopied(false), 1800)
@@ -168,7 +167,7 @@ export default function App() {
 
   async function copyResult() {
     if (!resultGrid) return
-    await copyToClipboard(`${resultGrid}\n\n너도 맞춰볼래?\n${GAME_URL}`)
+    await copyToClipboard(`${resultGrid}\n\n너도 맞춰볼래?\n${GAME_URL}\n\n#캐치크보`)
     setIsResultCopied(true)
     window.setTimeout(() => setIsResultCopied(false), 1800)
   }
