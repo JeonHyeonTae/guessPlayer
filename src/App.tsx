@@ -167,7 +167,7 @@ export default function App() {
 
   async function copyResult() {
     if (!resultGrid) return
-    await copyToClipboard(`${resultGrid}\n\n너도 맞춰볼래?\n${GAME_URL}\n\n#캐치크보`)
+    await copyToClipboard(`${resultGrid}\n\n너도 맞춰볼래?\n#캐치크보\n\n${GAME_URL}`)
     setIsResultCopied(true)
     window.setTimeout(() => setIsResultCopied(false), 1800)
   }
