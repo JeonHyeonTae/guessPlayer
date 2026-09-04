@@ -31,8 +31,36 @@ function StaffToggle({ includeStaff, onChange, modal = false }: { includeStaff: 
 
 function ShareMenu({ teams, isOpen, isCopied, onToggle, onShare }: { teams: string[]; isOpen: boolean; isCopied: boolean; onToggle: () => void; onShare: (team: string) => void }) {
   return <div className="share-menu">
-    <button className="share-button" onClick={onToggle} aria-label="구단별 게임 링크 공유하기" aria-expanded={isOpen} title={isCopied ? '복사됐습니다' : '게임 링크 공유하기'}><span className="share-figure" aria-hidden="true"><i>?</i><span>크보</span><i>?</i></span><b>{isCopied ? '복사됨' : '공유'}</b></button>
+    <button className="share-button" onClick={onToggle} aria-label="구단별 게임 링크 공유하기" aria-expanded={isOpen} title={isCopied ? '복사됐습니다' : '게임 링크 공유하기'}><span className="share-figure" aria-hidden="true"><i>?</i><span>누크야</span><i>?</i></span><b>{isCopied ? '복사됨' : '공유'}</b></button>
     {isOpen && <div className="share-menu-list" role="menu" aria-label="공유할 구단 선택"><p className="share-menu-title">공유할 구단을 선택하세요</p>{teams.length > 0 ? teams.map(team => <button key={team} role="menuitem" onClick={() => onShare(team)}>{team}</button>) : <span>구단 목록을 불러오는 중…</span>}</div>}
+  </div>
+}
+
+function BrandMark({ onClick }: { onClick?: () => void }) {
+  const content = <><span>누크야</span><img src="/nukeya-mark.png" alt="" aria-hidden="true" /></>
+  return onClick
+    ? <button className="brand-mark" onClick={onClick} aria-label="누크야! 메인으로">{content}</button>
+    : <div className="brand-mark" aria-label="누크야!">{content}</div>
+}
+
+function GameStatus({ meta, message, finished }: { meta: string; message: string | null; finished: boolean }) {
+  const [rosterDate, ...details] = meta.split(' · ')
+  const hasRosterDate = rosterDate.startsWith('선수 명단 기준일:')
+  const rosterDateValue = hasRosterDate ? rosterDate.slice('선수 명단 기준일:'.length).trim() : ''
+
+  return <div className="game-status">
+    <div className="game-status-meta">
+      {hasRosterDate ? <>
+        <span>선수 명단 기준일</span>
+        <details className="roster-date-help">
+          <summary aria-label="선수 명단 기준 설명 보기">?</summary>
+          <span className="roster-date-tooltip" role="note">명단 기준일 하루 전(-1일)의 1군 등록 선수 명단을 기준으로 합니다.</span>
+        </details>
+        <span>: {rosterDateValue}</span>
+      </> : <span>{rosterDate}</span>}
+      {details.length > 0 && <span> · {details.join(' · ')}</span>}
+    </div>
+    {message && !finished && <div className="notice">{message}</div>}
   </div>
 }
 
@@ -44,7 +72,7 @@ function RulesModal({ onClose }: { onClose: () => void }) {
   return <div className="game-modal-backdrop rules-modal-backdrop" onMouseDown={onClose}>
     <section className="game-modal rules-modal" role="dialog" aria-modal="true" aria-labelledby="rules-title" onMouseDown={event => event.stopPropagation()}>
       <div className="modal-header"><div><p className="eyebrow">HOW TO PLAY</p><h2 id="rules-title">어떻게 맞히나요?</h2></div><button onClick={onClose} aria-label="닫기">×</button></div>
-      <p className="rules-intro">선수 정보를 비교하며 숨겨진 KBO 선수를 최대 9번 안에 맞혀보세요.</p>
+      <p className="rules-intro">선수 정보를 비교하며 숨겨진 한국 프로야구 선수를 최대 9번 안에 맞혀보세요.</p>
       <ol className="rules-steps">
         <li><span>1</span><div><strong>게임 범위를 정해요</strong><p>출제 구단과 1군·퓨처스, 감독·코치 포함 여부를 선택하면 정답 선수가 정해집니다.</p></div></li>
         <li><span>2</span><div><strong>선수를 추측해요</strong><p>선수명을 두 글자 이상 입력하고 검색 결과에서 선수를 선택하세요. <b>명단</b>에서 출제 가능한 선수도 확인할 수 있어요.</p></div></li>
@@ -179,7 +207,7 @@ export default function App() {
     const challenge = guesses.some(guess => guess.isCorrect)
       ? successChallenges[Math.floor(Math.random() * successChallenges.length)]
       : `나 ${answer.name} ${MAX_TRIES}번 안에 못 맞춤 ㅠㅠ 너는 꼭 맞혀줘...`
-    await copyToClipboard(`${resultGrid}\n\n${challenge}\n#캐치크보\n\n${GAME_URL}`)
+    await copyToClipboard(`${resultGrid}\n\n${challenge}\n#누크야\n\n${GAME_URL}`)
     setIsResultCopied(true)
     window.setTimeout(() => setIsResultCopied(false), 1800)
   }
@@ -394,15 +422,15 @@ export default function App() {
 
   if (isUpdateWindow) return <main className="daily-update"><section><p className="eyebrow">DAILY ROSTER UPDATE</p><h1>선수단 정보를<br />업데이트하고 있습니다.</h1><p>매일 오후 4:00~4:05에는 최신 선수 정보 반영을 위해 잠시 이용할 수 없습니다.</p></section></main>
 
-  if (!mode) return <main className="landing"><ShareMenu teams={shareTeams} isOpen={isShareMenuOpen} isCopied={isShareCopied} onToggle={() => setIsShareMenuOpen(value => !value)} onShare={copyShareLink} /><RulesButton onClick={() => setIsRulesOpen(true)} /><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button><section><p className="eyebrow">캐치크보</p><h1>크보 선수를<br />맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><AdSenseBanner className="landing-ad" /><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} /><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0 || isStartingGame} onClick={() => start(setupMode)}>{isStartingGame ? '게임 시작 중…' : '선택한 구단으로 시작하기'}</button>{message && <div className="notice">{message}</div>}</section>{isRulesOpen && <RulesModal onClose={() => setIsRulesOpen(false)} />}</main>
+  if (!mode) return <main className="landing"><ShareMenu teams={shareTeams} isOpen={isShareMenuOpen} isCopied={isShareCopied} onToggle={() => setIsShareMenuOpen(value => !value)} onShare={copyShareLink} /><RulesButton onClick={() => setIsRulesOpen(true)} /><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button><section><BrandMark /><h1>한국 프로야구<br />선수를 맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><AdSenseBanner className="landing-ad" /><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} /><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0 || isStartingGame} onClick={() => start(setupMode)}>{isStartingGame ? '게임 시작 중…' : '선택한 구단으로 시작하기'}</button>{message && <div className="notice">{message}</div>}</section>{isRulesOpen && <RulesModal onClose={() => setIsRulesOpen(false)} />}</main>
 
   return (
     <main className="app">
       <header>
-        <button className="brand" onClick={returnToSetup}>캐치크보</button>
+        <BrandMark onClick={returnToSetup} />
         <div className="header-actions"><ShareMenu teams={shareTeams} isOpen={isShareMenuOpen} isCopied={isShareCopied} onToggle={() => setIsShareMenuOpen(value => !value)} onShare={copyShareLink} /><RulesButton onClick={() => setIsRulesOpen(true)} /><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button></div>
       </header>
-      <section className="hero"><p className="eyebrow">{mode === 'REGULAR' ? 'REGULAR ROSTER' : 'ALL ROSTER'}</p><div className="hero-title-row"><h1>선수 맞추기</h1><button className="game-action action-new" disabled={isStartingGame} onClick={() => start(mode)} aria-label="새 게임 시작" title="새 게임 시작"><span aria-hidden="true">↻</span></button><button className="game-action action-roster" onClick={openRoster}>명단</button><button className="game-action action-teams" onClick={() => setIsTeamPickerOpen(true)}>구단 선택</button></div><div className="game-status"><p>{meta}</p>{message && !finished && <div className="notice">{message}</div>}</div></section>
+      <section className="hero"><p className="eyebrow">{mode === 'REGULAR' ? 'REGULAR ROSTER' : 'ALL ROSTER'}</p><div className="hero-title-row"><h1>선수 맞추기</h1><button className="game-action action-new" disabled={isStartingGame} onClick={() => start(mode)} aria-label="새 게임 시작" title="새 게임 시작"><span aria-hidden="true">↻</span></button><button className="game-action action-roster" onClick={openRoster}>명단</button><button className="game-action action-teams" onClick={() => setIsTeamPickerOpen(true)}>구단 선택</button></div><GameStatus meta={meta} message={message} finished={finished} /></section>
       <section className="board">
         <div className="grid header"><span>선수</span>{fields.map(([, label]) => <span key={label}>{label}</span>)}</div>
         <div className="board-rows" ref={boardRowsRef}>{guesses.map((guess, index) => <div className="grid row" key={`${guess.picked.id}-${index}`}><strong>{guess.picked.name}<small>{guess.picked.team}</small></strong>{fields.map(([key, , valueKey]) => <div className={`cell ${guess.compare[key].status.toLowerCase()}`} key={key}>{String(guess.picked[valueKey])}<em>{statusText[guess.compare[key].status]}</em></div>)}</div>)}</div>
