@@ -159,7 +159,8 @@ export default function App() {
   }
 
   async function copyShareLink(team: string) {
-    await copyToClipboard(new URL(encodeURIComponent(sharePathForTeam(team)), GAME_URL).toString())
+    const shareUrl = new URL(encodeURIComponent(sharePathForTeam(team)), GAME_URL).toString()
+    await copyToClipboard(`${shareUrl}\n#캐치크보`)
     setIsShareMenuOpen(false)
     setIsShareCopied(true)
     window.setTimeout(() => setIsShareCopied(false), 1800)
