@@ -166,8 +166,20 @@ export default function App() {
   }
 
   async function copyResult() {
-    if (!resultGrid) return
-    await copyToClipboard(`${resultGrid}\n\n너도 맞춰볼래?\n#캐치크보\n\n${GAME_URL}`)
+    if (!resultGrid || !answer) return
+    const successChallenges = [
+      `나 ${answer.name} ${guesses.length}번만에 맞춤 ㅋ 너도 가능?`,
+      `나는 뭐… 야구 선수 몸무게까지 아는 사람이라 ㅋ ${answer.name} ${guesses.length}번만에 맞춤`,
+      `${answer.name}? ${guesses.length}번이면 충분하던데 ㅋ`,
+      `${guesses.length}번만에 ${answer.name} 맞힘. 이 정도면 야구박사 인정?`,
+      `등번호만 봐도 느낌 왔음 ㅋ ${answer.name} ${guesses.length}번만에 정답`,
+      `키랑 몸무게까지 보고 ${answer.name} 맞힘 ㅋ ${guesses.length}번 컷`,
+      `나 야구 좀 아나 봄 ㅋ ${answer.name} ${guesses.length}번만에 맞춤`,
+    ]
+    const challenge = guesses.some(guess => guess.isCorrect)
+      ? successChallenges[Math.floor(Math.random() * successChallenges.length)]
+      : `나 ${answer.name} ${MAX_TRIES}번 안에 못 맞춤 ㅠㅠ 너는 꼭 맞혀줘...`
+    await copyToClipboard(`${resultGrid}\n\n${challenge}\n#캐치크보\n\n${GAME_URL}`)
     setIsResultCopied(true)
     window.setTimeout(() => setIsResultCopied(false), 1800)
   }
