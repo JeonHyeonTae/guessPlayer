@@ -10,6 +10,30 @@ const ADSENSE_SCRIPT_ID = 'google-adsense-script'
 const adsenseClient = import.meta.env.VITE_GOOGLE_ADSENSE_CLIENT || 'ca-pub-3077425787731419'
 const adsenseSlot = import.meta.env.VITE_GOOGLE_ADSENSE_SLOT || '1905550513'
 const reportUrl = 'https://report.fortelior.com/ko/r/kboht'
+const mobileQuery = '(max-width: 600px)'
+
+function CoupangBanner({ className = '', isMobile }: { className?: string; isMobile: boolean }) {
+  // The Partners script writes its markup as it runs. Keeping it in an iframe
+  // makes that write deterministic and confines the third-party markup.
+  const config = isMobile
+    ? '{"id":1025951,"template":"carousel","trackingCode":"AF0893994","width":"341","height":"86","tsource":""}'
+    : '{"id":1025952,"template":"carousel","trackingCode":"AF0893994","width":"1070","height":"88","tsource":""}'
+  const width = isMobile ? 341 : 1070
+  const height = isMobile ? 86 : 88
+  const markup = `<!doctype html><html lang="ko"><head><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0;overflow:hidden"><script src="https://ads-partners.coupang.com/g.js"></script><script>new PartnersCoupang.G(${config});</script></body></html>`
+
+  return (
+    <aside className={`ad-banner coupang-banner ${className}`.trim()} aria-label="쿠팡 파트너스 광고">
+      <iframe
+        title="쿠팡 파트너스 광고"
+        srcDoc={markup}
+        width={width}
+        height={height}
+        scrolling="no"
+      />
+    </aside>
+  )
+}
 
 function loadAdSenseScript(client: string) {
   if (document.getElementById(ADSENSE_SCRIPT_ID)) return
@@ -91,9 +115,20 @@ export function DesktopSideAds() {
 }
 
 export function AdSenseBanner({ className = '' }: { className?: string }) {
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia(mobileQuery).matches)
+  const [showCoupang] = useState(() => Math.random() < 0.5)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(mobileQuery)
+    const update = () => setIsMobile(mediaQuery.matches)
+
+    mediaQuery.addEventListener('change', update)
+    return () => mediaQuery.removeEventListener('change', update)
+  }, [])
+
   return (
     <>
-      <AdSenseUnit className={className} />
+      {showCoupang ? <CoupangBanner className={className} isMobile={isMobile} /> : <AdSenseUnit className={className} />}
       <DesktopSideAds />
     </>
   )
