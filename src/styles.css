@@ -2818,14 +2818,14 @@ body.light-theme .modal-staff-toggle .staff-options button {
   position: fixed;
   top: 50%;
   display: block;
-  width: 160px;
+  width: 180px;
   height: 600px;
   min-height: 600px;
   margin: 0;
   transform: translateY(-50%);
 }
 .side-ad .adsbygoogle {
-  width: 160px;
+  width: 180px;
   height: 600px;
   min-height: 600px;
 }
@@ -2855,6 +2855,7 @@ body.light-theme .modal-staff-toggle .staff-options button {
 .side-ad .ad-fallback strong {
   font-size: 18px;
   line-height: 1.2;
+  white-space: nowrap;
 }
 .side-ad .ad-fallback em {
   font-size: 11px;
