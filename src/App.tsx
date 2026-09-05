@@ -25,6 +25,10 @@ function sharePathForTeam(team: string) {
   return shareTeamPaths.find(({ aliases }) => aliases.some(alias => normalized.includes(alias)))?.path ?? team.trim()
 }
 
+function shareUrlForTeam(team: string) {
+  return new URL(encodeURIComponent(sharePathForTeam(team)), GAME_URL).toString()
+}
+
 function StaffToggle({ includeStaff, onChange, modal = false }: { includeStaff: boolean; onChange: (value: boolean) => void; modal?: boolean }) {
   return <div className={modal ? 'modal-staff-toggle' : 'staff-toggle'}>{modal && <b className="modal-setting-title">출제 대상</b>}<div className="staff-options"><button className={!includeStaff ? 'selected' : undefined} onClick={() => onChange(false)}>선수만<span>감독·코치 제외</span></button><button className={includeStaff ? 'selected' : undefined} onClick={() => onChange(true)}>감독·코치 포함<span>스태프까지 함께 출제</span></button></div></div>
 }
@@ -187,7 +191,7 @@ export default function App() {
   }
 
   async function copyShareLink(team: string) {
-    await copyToClipboard(new URL(encodeURIComponent(sharePathForTeam(team)), GAME_URL).toString())
+    await copyToClipboard(shareUrlForTeam(team))
     setIsShareMenuOpen(false)
     setIsShareCopied(true)
     window.setTimeout(() => setIsShareCopied(false), 1800)
@@ -207,7 +211,7 @@ export default function App() {
     const challenge = guesses.some(guess => guess.isCorrect)
       ? successChallenges[Math.floor(Math.random() * successChallenges.length)]
       : `나 ${answer.name} ${MAX_TRIES}번 안에 못 맞춤 ㅠㅠ 너는 꼭 맞혀줘...`
-    await copyToClipboard(`${resultGrid}\n\n${challenge}\n#누크야\n\n${GAME_URL}`)
+    await copyToClipboard(`${resultGrid}\n\n${challenge}\n#누크야\n\n${shareUrlForTeam(answer.team)}`)
     setIsResultCopied(true)
     window.setTimeout(() => setIsResultCopied(false), 1800)
   }
