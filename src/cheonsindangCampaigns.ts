@@ -9,6 +9,8 @@ const definitions = [
   { id: 'hanwha', name: '한화', accent: '#ffac59' },
   { id: 'kt', name: 'KT', accent: '#ff777b' },
   { id: 'nc', name: 'NC', accent: '#eccb87' },
+  { id: 'ssg', name: 'SSG', accent: '#ff9387' },
+  { id: 'kiwoom', name: '키움', accent: '#dba1ef' },
 ] as const
 
 export const cheonsindangCampaigns = definitions.map(campaign => {

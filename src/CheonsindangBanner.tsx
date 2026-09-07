@@ -28,7 +28,7 @@ export function CheonsindangBannerPreview() {
     <main className="banner-preview">
       <p>포텔리어 × BASEBALL</p>
       <h1>오늘의 기운, 몇 도까지?</h1>
-      <p>기업명만 담은 8가지 배너 · 가로형 / 모바일 / 사이드</p>
+      <p>기업명만 담은 {cheonsindangCampaigns.length}가지 배너 · 가로형 / 모바일 / 사이드</p>
       {cheonsindangCampaigns.map(campaign => (
         <section key={campaign.id}>
           <h2>{campaign.name} <small>{campaign.hasCustomDestination ? '개별 목적지 연결됨' : '오늘의 야구 + 기업별 UTM'}</small></h2>

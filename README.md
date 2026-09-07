@@ -38,13 +38,13 @@ npm run dev
 
 ## 포텔리어 야구 기운 배너
 
-선수명·선수 이미지·구단 로고 없이 KIA, 삼성, 롯데, LG, 두산, 한화, KT, NC 기업명만 쓰는 8종입니다. 현재는 쿠팡/AdSense를 임시로 끄고 포텔리어 배너를 바로 표시합니다. 시작 화면은 선택 중인 구단, 게임 화면과 PC 사이드는 현재 출제 구단에 맞춥니다. 여러 구단이면 선택 목록에서 배너가 있는 구단들을 선택 순서대로 5초마다 순환합니다. 가로 배너와 PC 사이드는 이미지·문구·링크가 함께 바뀌며, 선택 구단을 변경하면 첫 배너부터 다시 시작합니다. 한 구단만 선택하면 고정하고, 미선택 또는 SSG·키움만 선택하면 기업명이 없는 공통 문구를 표시합니다. `VITE_ENABLE_EXTERNAL_ADS=true`로 변경 후 다시 빌드하면 기존 쿠팡/AdSense 혼합 노출을 복원합니다.
+선수명·선수 이미지·구단 로고 없이 KIA, 삼성, 롯데, LG, 두산, 한화, KT, NC, SSG, 키움 기업명만 쓰는 10종입니다. 현재는 쿠팡/AdSense를 임시로 끄고 포텔리어 배너를 바로 표시합니다. 시작 화면은 선택 중인 구단, 게임 화면과 PC 사이드는 현재 출제 구단에 맞춥니다. 여러 구단이면 선택 목록에서 배너가 있는 구단들을 선택 순서대로 5초마다 순환합니다. 가로 배너와 PC 사이드는 이미지·문구·링크가 함께 바뀌며, 선택 구단을 변경하면 첫 배너부터 다시 시작합니다. 한 구단만 선택하면 고정하고, 미선택이면 기업명이 없는 공통 문구를 표시합니다. `VITE_ENABLE_EXTERNAL_ADS=true`로 변경 후 다시 빌드하면 기존 쿠팡/AdSense 혼합 노출을 복원합니다.
 
 - `src/cheonsindangCampaigns.ts`: 기업명, 문구, 이미지, 목적지 설정.
-- `src/CheonsindangBanner.tsx`: 실제 배너와 개발용 8종 갤러리.
+- `src/CheonsindangBanner.tsx`: 실제 배너와 개발용 10종 갤러리.
 - `public/ads/cheonsindang/`: 기업별 생성 이미지.
 - 로컬 개발 서버의 `/?banner-preview=1`에서 가로형·341px 모바일·180×600 사이드 배너를 비교할 수 있습니다. 프로덕션에서는 이 쿼리가 갤러리를 열지 않습니다.
 
-각 목적지는 `.env.example`의 `VITE_CHEONSINDANG_KIA_URL` 등 8개 환경 변수로 따로 설정합니다. Vite 환경 변수이므로 변경 후 다시 빌드/배포해야 합니다. 개별 값이 없거나 올바른 HTTP(S) URL이 아니면 공통 `VITE_BASEBALL_FORTUNE_URL`(기본: `https://www.fortelior.com/ko/baseball?from=guessPlayer`)에 기업별 `utm_content`를 붙입니다. 이 기본값은 같은 오늘의 야구 페이지로 가는 구분용 링크이며, 기업별 별도 콘텐츠 페이지를 만들지는 않습니다.
+각 목적지는 `.env.example`의 `VITE_CHEONSINDANG_KIA_URL` 등 10개 환경 변수로 따로 설정합니다. Vite 환경 변수이므로 변경 후 다시 빌드/배포해야 합니다. 개별 값이 없거나 올바른 HTTP(S) URL이 아니면 공통 `VITE_BASEBALL_FORTUNE_URL`(기본: `https://www.fortelior.com/ko/baseball?from=guessPlayer`)에 기업별 `utm_content`를 붙입니다. 이 기본값은 같은 오늘의 야구 페이지로 가는 구분용 링크이며, 기업별 별도 콘텐츠 페이지를 만들지는 않습니다.
 
-이미지는 built-in `image_gen`으로 생성했으며 최종 프롬프트 8개는 `docs/cheonsindang-image-prompts.md`에 보관합니다. PNG 원본에는 글자가 없고 실제 배너에서 HTML 문구를 겹쳐 표시합니다.
+이미지는 built-in `image_gen`으로 생성했으며 최종 프롬프트 10개는 `docs/cheonsindang-image-prompts.md`에 보관합니다. PNG 원본에는 글자가 없고 실제 배너에서 HTML 문구를 겹쳐 표시합니다.
