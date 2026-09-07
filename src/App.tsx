@@ -17,7 +17,7 @@ const shareTeamPaths = [
 ]
 
 function isDailyUpdateWindow(now = new Date()) {
-  return now.getHours() === 16 && now.getMinutes() < 5
+  return now.getHours() === 4 && now.getMinutes() < 5
 }
 
 function sharePathForTeam(team: string) {
@@ -408,7 +408,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', closeRulesOnEscape)
   }, [isRulesOpen])
 
-  if (isUpdateWindow) return <main className="daily-update"><section><p className="eyebrow">DAILY ROSTER UPDATE</p><h1>선수단 정보를<br />업데이트하고 있습니다.</h1><p>매일 오후 4:00~4:05에는 최신 선수 정보 반영을 위해 잠시 이용할 수 없습니다.</p></section></main>
+  if (isUpdateWindow) return <main className="daily-update"><section><p className="eyebrow">DAILY ROSTER UPDATE</p><h1>선수단 정보를<br />업데이트하고 있습니다.</h1><p>매일 새벽 4:00~4:05에는 최신 선수 정보 반영을 위해 잠시 이용할 수 없습니다.</p></section></main>
 
   if (!mode) return <main className="landing"><ShareMenu teams={shareTeams} isOpen={isShareMenuOpen} isCopied={isShareCopied} onToggle={() => setIsShareMenuOpen(value => !value)} onShare={copyShareLink} /><RulesButton onClick={() => setIsRulesOpen(true)} /><button className="theme-toggle" onClick={() => setIsDarkMode(value => !value)}>{isDarkMode ? '라이트 모드' : '다크 모드'}</button><section><BrandMark /><h1>한국 프로야구<br />선수를 맞혀보세요.</h1><p>구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.</p><AdSenseBanner className="landing-ad" teams={selectedTeams} /><div className="mode-grid"><button className={setupMode === 'REGULAR' ? 'selected' : undefined} onClick={() => setSetupMode('REGULAR')}>1군<span>현역 1군 선수</span></button><button className={setupMode === 'ALL' ? 'selected' : undefined} onClick={() => setSetupMode('ALL')}>1군 + 퓨처스<span>더 넓은 로스터</span></button></div><StaffToggle includeStaff={includeStaff} onChange={setIncludeStaff} /><div className="team-picker"><div><b>출제 구단</b><button onClick={() => setSelectedTeams(selectedTeams.length === teamOptions.length ? [] : teamOptions)}>{selectedTeams.length === teamOptions.length ? '전체 해제' : '전체 선택'}</button></div><div className="team-list">{teamOptions.map(team => <button className={selectedTeams.includes(team) ? 'selected' : undefined} key={team} onClick={() => setSelectedTeams(previous => previous.includes(team) ? previous.filter(value => value !== team) : [...previous, team])}>{team}</button>)}</div></div><button className="start-game" disabled={selectedTeams.length === 0 || isStartingGame} onClick={() => start(setupMode)}>{isStartingGame ? '게임 시작 중…' : '선택한 구단으로 시작하기'}</button>{message && <div className="notice">{message}</div>}</section>{isRulesOpen && <RulesModal onClose={() => setIsRulesOpen(false)} />}</main>
 
