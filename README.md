@@ -25,10 +25,11 @@ npm run dev
 
 ## X 공유 카드
 
-공유 버튼은 `/share/20260907/{team}/` 주소를 사용합니다. 팀 코드는 `kt`, `nc`, `ssg`, `kia`, `doosan`, `lotte`, `samsung`, `lg`, `kiwoom`, `hanwha`입니다.
+공유 버튼은 `/share/20260907/{team}/` 주소를 사용합니다. LG만 iOS 카드 표시 문제를 비교하기 위해 `/share/20260907-v2/lg/`를 사용하며, 일반 공유와 결과 공유에 동일하게 적용됩니다. 팀 코드는 `kt`, `nc`, `ssg`, `kia`, `doosan`, `lotte`, `samsung`, `lg`, `kiwoom`, `hanwha`입니다.
 
 - `public/share/20260907/{team}/index.html`: JavaScript 실행 없이 읽을 수 있는 공유 메타태그. 사람이 열면 홈으로 이동합니다.
 - `public/share-{team}-20260907.jpg`: 1200×675 JPEG, 각 350KB 미만. 기존 PNG는 원본으로 유지합니다.
+- LG v2 이미지는 `public/share-lg-20260907-v2.jpg`이며 1000×562 JPEG로 재인코딩했습니다. 기존 LG 주소도 이 이미지를 참조합니다. iOS 표시 개선 여부는 배포 후 별도로 확인해야 합니다.
 - 기존 팀 주소의 메타태그도 새 JPEG를 참조합니다.
 
 배포 후에는 기존 주소와 새 주소를 X 작성 화면에 각각 붙여 넣어 비교합니다. 먼저 삼성과 LG를 비교하고, 두산·NC·한화도 확인합니다. 작성 화면만으로 확인할 수 있으므로 게시할 필요는 없습니다. HTTP 응답 성공만으로 실제 X 카드 표시 성공을 판정하지 않습니다.

@@ -26,7 +26,9 @@ function sharePathForTeam(team: string) {
 }
 
 function shareUrlForTeam(team: string) {
-  return new URL(`share/20260907/${encodeURIComponent(sharePathForTeam(team))}/`, GAME_URL).toString()
+  const teamPath = sharePathForTeam(team)
+  const version = teamPath === 'lg' ? '20260907-v2' : '20260907'
+  return new URL(`share/${version}/${encodeURIComponent(teamPath)}/`, GAME_URL).toString()
 }
 
 function StaffToggle({ includeStaff, onChange, modal = false }: { includeStaff: boolean; onChange: (value: boolean) => void; modal?: boolean }) {
