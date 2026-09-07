@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/share/20260907/:team", "destination": "/share/20260907/:team/index.html" },
     { "source": "/KT", "destination": "/KT/index.html" },
     { "source": "/NC", "destination": "/NC/index.html" },
     { "source": "/SSG", "destination": "/SSG/index.html" },

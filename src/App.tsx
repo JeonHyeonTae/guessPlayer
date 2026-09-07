@@ -11,9 +11,9 @@ const statusText: Record<Status, string> = { MATCH: '', MISMATCH: '', UP: '↑',
 const resultEmoji: Record<Status, string> = { MATCH: '🟩', MISMATCH: '⬜️', UP: '🟨', DOWN: '🟨' }
 const positionOrder = ['감독', '코치', '투수', '포수', '내야수', '외야수']
 const shareTeamPaths = [
-  { path: 'KT', aliases: ['kt'] }, { path: 'NC', aliases: ['nc'] }, { path: 'SSG', aliases: ['ssg'] },
-  { path: '기아', aliases: ['기아', 'kia'] }, { path: '두산', aliases: ['두산'] }, { path: '롯데', aliases: ['롯데'] },
-  { path: '삼성', aliases: ['삼성'] }, { path: '엘지', aliases: ['엘지', 'lg'] }, { path: '키움', aliases: ['키움'] }, { path: '한화', aliases: ['한화'] },
+  { path: 'kt', aliases: ['kt'] }, { path: 'nc', aliases: ['nc'] }, { path: 'ssg', aliases: ['ssg'] },
+  { path: 'kia', aliases: ['기아', 'kia'] }, { path: 'doosan', aliases: ['두산'] }, { path: 'lotte', aliases: ['롯데'] },
+  { path: 'samsung', aliases: ['삼성'] }, { path: 'lg', aliases: ['엘지', 'lg'] }, { path: 'kiwoom', aliases: ['키움'] }, { path: 'hanwha', aliases: ['한화'] },
 ]
 
 function isDailyUpdateWindow(now = new Date()) {
@@ -26,7 +26,7 @@ function sharePathForTeam(team: string) {
 }
 
 function shareUrlForTeam(team: string) {
-  return new URL(encodeURIComponent(sharePathForTeam(team)), GAME_URL).toString()
+  return new URL(`share/20260907/${encodeURIComponent(sharePathForTeam(team))}/`, GAME_URL).toString()
 }
 
 function StaffToggle({ includeStaff, onChange, modal = false }: { includeStaff: boolean; onChange: (value: boolean) => void; modal?: boolean }) {
