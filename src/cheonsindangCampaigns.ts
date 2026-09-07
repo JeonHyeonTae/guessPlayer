@@ -58,15 +58,16 @@ const generalCampaign: CheonsindangCampaign = {
   hasCustomDestination: false,
 }
 
-export function campaignForTeams(teams: readonly string[]): CheonsindangCampaign {
+export function campaignsForTeams(teams: readonly string[]): CheonsindangCampaign[] {
+  const campaigns: CheonsindangCampaign[] = []
   for (const team of teams) {
     const normalized = team.toLowerCase().replace(/\s/g, '')
     const campaign = cheonsindangCampaigns.find(({ id, name }) =>
       [id, name.toLowerCase(), ...(id === 'kia' ? ['기아'] : id === 'lg' ? ['엘지'] : [])]
         .some(alias => normalized.startsWith(alias)),
     )
-    if (campaign) return campaign
+    if (campaign && !campaigns.some(selected => selected.id === campaign.id)) campaigns.push(campaign)
   }
   // No selection, or only teams without artwork: don't advertise an unrelated team.
-  return generalCampaign
+  return campaigns.length > 0 ? campaigns : [generalCampaign]
 }
