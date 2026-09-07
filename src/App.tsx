@@ -3,7 +3,7 @@ import { AdSenseBanner } from './AdSenseBanner'
 import { api, type Guess, type Mode, type PickedPlayer, type Player, type RosterPlayer, type Status } from './api'
 
 const MAX_TRIES = 9
-const GAME_URL = 'https://guess-player-eosin.vercel.app/'
+const GAME_URL = 'https://nu-kya.com/'
 const fields: Array<[keyof Guess['compare'], string, keyof PickedPlayer]> = [
   ['team', '구단', 'team'], ['backNo', '등번호', 'backNo'], ['position', '포지션', 'position'], ['throwingHand', '투구', 'throwingHand'], ['battingSide', '타석', 'battingSide'], ['birthYear', '출생연도', 'birthYear'], ['height', '키', 'height'], ['weight', '몸무게', 'weight'],
 ]

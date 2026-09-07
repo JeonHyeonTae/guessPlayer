@@ -48,3 +48,14 @@ npm run dev
 각 목적지는 `.env.example`의 `VITE_CHEONSINDANG_KIA_URL` 등 10개 환경 변수로 따로 설정합니다. Vite 환경 변수이므로 변경 후 다시 빌드/배포해야 합니다. 개별 값이 없거나 올바른 HTTP(S) URL이 아니면 공통 `VITE_BASEBALL_FORTUNE_URL`(기본: `https://www.fortelior.com/ko/baseball?from=guessPlayer`)에 기업별 `utm_content`를 붙입니다. 이 기본값은 같은 오늘의 야구 페이지로 가는 구분용 링크이며, 기업별 별도 콘텐츠 페이지를 만들지는 않습니다.
 
 이미지는 built-in `image_gen`으로 생성했으며 최종 프롬프트 10개는 `docs/cheonsindang-image-prompts.md`에 보관합니다. PNG 원본에는 글자가 없고 실제 배너에서 HTML 문구를 겹쳐 표시합니다.
+
+
+## nu-kya.com 도메인 연결
+
+대표 게임 주소는 `https://nu-kya.com/`입니다. 게임 공유 URL, 팀별 공유 페이지의 canonical/OG/Twitter 이미지 URL, sitemap과 robots도 이 도메인을 사용합니다. 기존 `/game/{id}`와 `/share/...` 경로는 같은 Vercel 프로젝트에서 그대로 동작합니다.
+
+- 게임 API는 `VITE_API_BASE_URL=https://api.solusi.co.kr/api/v1`을 사용합니다. 프론트 도메인으로 API 주소를 바꾸지 않습니다.
+- `InPharm_BE`의 KBO CORS 변경을 먼저 배포해야 새 도메인에서 게임 API를 호출할 수 있습니다. `https://nu-kya.com`과 `https://www.nu-kya.com`을 KBO API에 허용합니다. www를 실제 서비스하려면 Vercel에도 해당 도메인 등록이 필요합니다.
+- 이후 guessPlayer를 배포하면 새로 복사하는 공유 링크 및 검색·공유 메타정보가 새 도메인을 사용합니다.
+- 포텔리어 배너는 기존 `https://www.fortelior.com/ko/baseball?from=guessPlayer`에 팀별 `utm_content`를 붙여 연결합니다. 도메인이 달라도 이 식별자로 기존 포텔리어 유입·결제 전환 추적을 이어갑니다.
+- 이번 변경에는 DB 마이그레이션이 없습니다.

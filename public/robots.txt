@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://guess-player-eosin.vercel.app/sitemap.xml
+Sitemap: https://nu-kya.com/sitemap.xml
