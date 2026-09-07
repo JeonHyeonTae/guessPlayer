@@ -35,3 +35,16 @@ npm run dev
 배포 후에는 기존 주소와 새 주소를 X 작성 화면에 각각 붙여 넣어 비교합니다. 먼저 삼성과 LG를 비교하고, 두산·NC·한화도 확인합니다. 작성 화면만으로 확인할 수 있으므로 게시할 필요는 없습니다. HTTP 응답 성공만으로 실제 X 카드 표시 성공을 판정하지 않습니다.
 
 이미지가 여전히 빠지면 Vercel의 요청/방화벽 기록에서 해당 페이지 및 이미지 경로를 검색해 실제 `Twitterbot` 요청의 상태 코드와 차단 여부를 확인합니다. 정적 파일 요청은 함수 Runtime Logs에 없을 수 있으며, 과거 요청 기록은 프로젝트의 로그 제공 범위와 보존 기간에 따라 조회가 불가능할 수 있습니다.
+
+## 포텔리어 야구 기운 배너
+
+선수명·선수 이미지·구단 로고 없이 KIA, 삼성, 롯데, LG, 두산, 한화, KT, NC 기업명만 쓰는 8종입니다. 포텔리어 광고는 기존 광고 위치(AdSense 미충전 시 대체 배너)에 적용되며 광고 영역이 마운트될 때 무작위로 한 종을 선택합니다. 기존 쿠팡/AdSense 노출 분기는 유지됩니다.
+
+- `src/cheonsindangCampaigns.ts`: 기업명, 문구, 이미지, 목적지 설정.
+- `src/CheonsindangBanner.tsx`: 실제 배너와 개발용 8종 갤러리.
+- `public/ads/cheonsindang/`: 기업별 생성 이미지.
+- 로컬 개발 서버의 `/?banner-preview=1`에서 가로형·341px 모바일·180×600 사이드 배너를 비교할 수 있습니다. 프로덕션에서는 이 쿼리가 갤러리를 열지 않습니다.
+
+각 목적지는 `.env.example`의 `VITE_CHEONSINDANG_KIA_URL` 등 8개 환경 변수로 따로 설정합니다. Vite 환경 변수이므로 변경 후 다시 빌드/배포해야 합니다. 개별 값이 없거나 올바른 HTTP(S) URL이 아니면 공통 `VITE_BASEBALL_FORTUNE_URL`(기본: `https://www.fortelior.com/ko/baseball?from=guessPlayer`)에 기업별 `utm_content`를 붙입니다. 이 기본값은 같은 오늘의 야구 페이지로 가는 구분용 링크이며, 기업별 별도 콘텐츠 페이지를 만들지는 않습니다.
+
+이미지는 built-in `image_gen`으로 생성했으며 최종 프롬프트 8개는 `docs/cheonsindang-image-prompts.md`에 보관합니다. PNG 원본에는 글자가 없고 실제 배너에서 HTML 문구를 겹쳐 표시합니다.

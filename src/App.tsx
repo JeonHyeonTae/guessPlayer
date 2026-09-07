@@ -201,19 +201,7 @@ export default function App() {
 
   async function copyResult() {
     if (!resultGrid || !answer) return
-    const successChallenges = [
-      `나 ${answer.name} ${guesses.length}번만에 맞춤 ㅋ 너도 가능?`,
-      `나는 뭐… 야구 선수 몸무게까지 아는 사람이라 ㅋ ${answer.name} ${guesses.length}번만에 맞춤`,
-      `${answer.name}? ${guesses.length}번이면 충분하던데 ㅋ`,
-      `${guesses.length}번만에 ${answer.name} 맞힘. 이 정도면 야구박사 인정?`,
-      `등번호만 봐도 느낌 왔음 ㅋ ${answer.name} ${guesses.length}번만에 정답`,
-      `키랑 몸무게까지 보고 ${answer.name} 맞힘 ㅋ ${guesses.length}번 컷`,
-      `나 야구 좀 아나 봄 ㅋ ${answer.name} ${guesses.length}번만에 맞춤`,
-    ]
-    const challenge = guesses.some(guess => guess.isCorrect)
-      ? successChallenges[Math.floor(Math.random() * successChallenges.length)]
-      : `나 ${answer.name} ${MAX_TRIES}번 안에 못 맞춤 ㅠㅠ 너는 꼭 맞혀줘...`
-    await copyToClipboard(`${resultGrid}\n\n${challenge}\n#누크야\n\n${shareUrlForTeam(answer.team)}`)
+    await copyToClipboard(`${resultGrid}\n\n#${answer.name}\n#누크야\n\n${shareUrlForTeam(answer.team)}`)
     setIsResultCopied(true)
     window.setTimeout(() => setIsResultCopied(false), 1800)
   }
@@ -400,12 +388,6 @@ export default function App() {
   }, [activePlayerIndex])
 
   useEffect(() => {
-    if (mode && !finished && window.matchMedia('(max-width: 600px)').matches) {
-      searchInputRef.current?.focus()
-    }
-  }, [gameId, mode, finished])
-
-  useEffect(() => {
     const focusSearchOnTyping = (event: KeyboardEvent) => {
       if (finished || !mode || event.ctrlKey || event.metaKey || event.altKey) return
       if (event.key.length !== 1 && event.key !== 'Process') return
@@ -450,7 +432,7 @@ export default function App() {
               if (!container.contains(document.activeElement)) { setPlayers([]); setActivePlayerIndex(-1) }
             }, 0)
           }}>
-            <input ref={searchInputRef} autoFocus disabled={finished} readOnly={isSubmitting} value={query} onChange={event => { setQuery(event.target.value); setActivePlayerIndex(-1) }} onFocus={() => {
+            <input ref={searchInputRef} autoFocus={!window.matchMedia('(max-width: 600px)').matches} disabled={finished} readOnly={isSubmitting} value={query} onChange={event => { setQuery(event.target.value); setActivePlayerIndex(-1) }} onFocus={() => {
               if (!finished && mode && query.trim().length >= 2) api.search(query.trim(), mode, gameIncludesStaff, gameTeams).then(results => {
                 setPlayers(results)
                 setActivePlayerIndex(results.length > 0 ? 0 : -1)

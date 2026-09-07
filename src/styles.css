@@ -2762,8 +2762,8 @@ body.light-theme .modal-staff-toggle .staff-options button {
   overflow: hidden;
   border: 1px solid rgba(225, 190, 111, 0.45);
   border-radius: 8px;
-  background: #101936 url("/cheonsindang-report-ad.png") center / cover
-    no-repeat;
+  background: radial-gradient(circle at 85% 45%, #3b82f6 0, transparent 35%),
+    linear-gradient(120deg, #071d35, #164e63);
   color: #fff;
   text-decoration: none;
   isolation: isolate;
@@ -3487,4 +3487,62 @@ body:not(.light-theme) .roster-legend {
   body.light-theme .board .header {
     background: #f4f7fb;
   }
+}
+
+/* Baseball fortune campaign artwork; text stays crisp at every placement size. */
+.ad-fallback.temperature-banner {
+  border-color: color-mix(in srgb, var(--campaign-accent) 48%, #18213a);
+  background-color: #080e1e;
+  background-position: right center;
+  background-size: auto 250px;
+  background-repeat: no-repeat;
+}
+.temperature-banner::after,
+.temperature-banner:hover::after {
+  max-height: none;
+  background: linear-gradient(90deg, rgba(5, 10, 24, .96), rgba(5, 10, 24, .8) 42%, rgba(5, 10, 24, .08) 72%);
+}
+.temperature-banner .ad-fallback-copy {
+  gap: 3px;
+  padding: 7px 20px;
+}
+.temperature-banner small {
+  color: var(--campaign-accent);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: .02em;
+}
+.temperature-banner small span { margin-left: 6px; color: #c5cddd; font-weight: 400; }
+.temperature-banner strong { font-size: 16px; line-height: 1.2; letter-spacing: -.04em; }
+.temperature-banner em { color: var(--campaign-accent); font-size: 10px; line-height: 1.3; }
+.temperature-banner em span { margin-left: 8px; }
+.temperature-ad-label { position: absolute; top: 7px; right: 9px; color: #c0c8d8; font-size: 9px; }
+.temperature-banner:focus-visible { outline: 3px solid var(--campaign-accent); outline-offset: -4px; }
+.side-ad .temperature-banner { background-position: 88% 15%; background-size: auto 450px; }
+.side-ad .temperature-banner::after { background: linear-gradient(180deg, rgba(5,10,24,.15) 35%, rgba(5,10,24,.85) 70%, #080e1e); }
+.side-ad .temperature-banner .ad-fallback-copy { gap: 12px; padding: 22px 14px; }
+.side-ad .temperature-banner small span { display: block; margin: 6px 0 0; }
+.side-ad .temperature-banner strong { font-size: 20px; line-height: 1.4; white-space: normal; word-break: keep-all; }
+.side-ad .temperature-banner em { font-size: 11px; }
+.banner-preview { width: 100%; max-width: 1134px; min-width: 0; margin: auto; padding: 40px 24px; color: #edf2ff; box-sizing: border-box; }
+body:has(.banner-preview) { overflow: auto; background: #080e1b; }
+.banner-preview > p { color: #9ba9c1; }
+.banner-preview h1 { margin: 12px 0; font-size: clamp(26px, 5vw, 42px); }
+.banner-preview section { margin-top: 42px; padding-top: 16px; border-top: 1px solid #27324b; }
+.banner-preview h2 { font-size: 20px; }
+.banner-preview h2 small { display: block; margin-top: 8px; font-size: 12px; color: #9ba9c1; font-weight: 400; }
+.banner-preview .preview-wide { height: 88px; }
+.preview-formats { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px; }
+.banner-preview .preview-mobile { width: 341px; max-width: 100%; height: 88px; flex: none; }
+.banner-preview .preview-side { position: relative; top: auto; transform: none; flex: none; }
+.preview-mobile .temperature-banner .ad-fallback-copy { padding: 8px 12px; }
+.preview-mobile .temperature-banner strong { font-size: 15px; }
+.preview-mobile .temperature-banner small { font-size: 9px; }
+@media (max-width: 600px) {
+  .temperature-banner .ad-fallback-copy { padding: 8px 12px; }
+  .temperature-banner strong { font-size: 15px; }
+  .temperature-banner small { font-size: 9px; }
+  .banner-preview .preview-side, .banner-preview .preview-side .ad-fallback { height: 600px; min-height: 600px; max-height: 600px; }
 }
