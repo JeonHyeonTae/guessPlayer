@@ -40,4 +40,33 @@ export const cheonsindangCampaigns = definitions.map(campaign => {
   }
 })
 
-export type CheonsindangCampaign = typeof cheonsindangCampaigns[number]
+export type CheonsindangCampaign = Omit<typeof cheonsindangCampaigns[number], 'id' | 'name'> & { id: string; name: string }
+
+const generalUrl = new URL(baseballUrl)
+generalUrl.searchParams.set('from', 'guessPlayer')
+generalUrl.searchParams.set('utm_source', 'guessPlayer')
+generalUrl.searchParams.set('utm_medium', 'banner')
+generalUrl.searchParams.set('utm_campaign', 'baseball_temperature')
+generalUrl.searchParams.set('utm_content', 'general')
+
+const generalCampaign: CheonsindangCampaign = {
+  ...cheonsindangCampaigns[0],
+  id: 'general',
+  name: '포텔리어',
+  headline: '오늘 우리의 기운,',
+  href: generalUrl.toString(),
+  hasCustomDestination: false,
+}
+
+export function campaignForTeams(teams: readonly string[]): CheonsindangCampaign {
+  for (const team of teams) {
+    const normalized = team.toLowerCase().replace(/\s/g, '')
+    const campaign = cheonsindangCampaigns.find(({ id, name }) =>
+      [id, name.toLowerCase(), ...(id === 'kia' ? ['기아'] : id === 'lg' ? ['엘지'] : [])]
+        .some(alias => normalized.startsWith(alias)),
+    )
+    if (campaign) return campaign
+  }
+  // No selection, or only teams without artwork: don't advertise an unrelated team.
+  return generalCampaign
+}

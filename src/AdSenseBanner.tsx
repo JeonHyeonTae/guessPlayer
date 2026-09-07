@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { CheonsindangBanner } from './CheonsindangBanner'
-import { cheonsindangCampaigns } from './cheonsindangCampaigns'
+import { campaignForTeams, cheonsindangCampaigns, type CheonsindangCampaign } from './cheonsindangCampaigns'
 
 declare global {
   interface Window {
@@ -82,7 +82,15 @@ function AdSenseUnit({ className = '' }: { className?: string }) {
   )
 }
 
-export function DesktopSideAds() {
+function FortuneAdUnit({ className = '', campaign }: { className?: string; campaign: CheonsindangCampaign }) {
+  return (
+    <aside className={`ad-banner fortune-ad ${className}`.trim()} aria-label="포텔리어 광고">
+      <CheonsindangBanner campaign={campaign} />
+    </aside>
+  )
+}
+
+export function DesktopSideAds({ campaign }: { campaign?: CheonsindangCampaign } = {}) {
   const [isDesktop, setIsDesktop] = useState(false)
 
   useEffect(() => {
@@ -98,13 +106,13 @@ export function DesktopSideAds() {
 
   return (
     <>
-      <AdSenseUnit className="side-ad side-ad-left" />
-      <AdSenseUnit className="side-ad side-ad-right" />
+      {campaign ? <FortuneAdUnit className="side-ad side-ad-left" campaign={campaign} /> : <AdSenseUnit className="side-ad side-ad-left" />}
+      {campaign ? <FortuneAdUnit className="side-ad side-ad-right" campaign={campaign} /> : <AdSenseUnit className="side-ad side-ad-right" />}
     </>
   )
 }
 
-export function AdSenseBanner({ className = '' }: { className?: string }) {
+function LegacyAdSenseBanner({ className = '' }: { className?: string }) {
   const [isMobile, setIsMobile] = useState(() => window.matchMedia(mobileQuery).matches)
   const [showCoupang] = useState(() => Math.random() < 0.5)
 
@@ -120,6 +128,19 @@ export function AdSenseBanner({ className = '' }: { className?: string }) {
     <>
       {showCoupang ? <CoupangBanner className={className} isMobile={isMobile} /> : <AdSenseUnit className={className} />}
       <DesktopSideAds />
+    </>
+  )
+}
+
+export function AdSenseBanner({ className = '', teams = [] }: { className?: string; teams?: readonly string[] }) {
+  // Temporary campaign takeover. Opt in explicitly to restore the previous ad mix.
+  if (import.meta.env.VITE_ENABLE_EXTERNAL_ADS === 'true') return <LegacyAdSenseBanner className={className} />
+
+  const campaign = campaignForTeams(teams)
+  return (
+    <>
+      <FortuneAdUnit className={className} campaign={campaign} />
+      <DesktopSideAds campaign={campaign} />
     </>
   )
 }

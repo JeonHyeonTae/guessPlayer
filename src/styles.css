@@ -2736,6 +2736,8 @@ body.light-theme .modal-staff-toggle .staff-options button {
   width: 100%;
   min-height: 90px;
 }
+.fortune-ad { height: 88px; min-height: 88px; }
+.fortune-ad .ad-fallback { display: flex; }
 .landing-ad {
   max-height: 88px;
   margin-top: 18px;
