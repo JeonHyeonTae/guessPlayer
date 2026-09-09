@@ -51,6 +51,17 @@ test('full team names from either language display only the company name', () =>
   assert.equal(teamName('엘지', 'en'), 'LG')
 })
 
+test('Futures-only teams have English labels and keep distinct API identities', () => {
+  const extraTeams = [['고양', 'Goyang'], ['상무', 'Sangmu'], ['울산', 'Ulsan']]
+  for (const [ko, en] of extraTeams) {
+    assert.equal(teamName(ko, 'en'), en)
+    assert.equal(teamName(ko, 'ko'), ko)
+    assert.equal(teamName(en.toLowerCase(), 'en'), en)
+    assert.equal(teamName(en, 'ko'), ko)
+  }
+  assert.notEqual(teamName('고양', 'en'), teamName('키움', 'en'))
+})
+
 test('legacy responses keep a visible player name and result hashtags never contain spaces', () => {
   assert.equal(playerName({ name: '김도영' }, 'en'), '김도영')
   assert.equal(playerName({ name: '김도영', nameEn: '  ' }, 'en'), '김도영')

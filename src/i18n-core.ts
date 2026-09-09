@@ -1,6 +1,6 @@
 export type Locale = 'ko' | 'en'
 
-// API values remain unchanged; every team label displays only its company name.
+// API values remain unchanged; team labels omit mascot names in both languages.
 const teams: Array<{ aliases: string[]; ko: string; en: string }> = [
   { aliases: ['KIA', '기아'], ko: 'KIA', en: 'KIA' },
   { aliases: ['LG', '엘지'], ko: 'LG', en: 'LG' },
@@ -12,6 +12,9 @@ const teams: Array<{ aliases: string[]; ko: string; en: string }> = [
   { aliases: ['한화', 'Hanwha'], ko: '한화', en: 'Hanwha' },
   { aliases: ['NC'], ko: 'NC', en: 'NC' },
   { aliases: ['키움', 'Kiwoom'], ko: '키움', en: 'Kiwoom' },
+  { aliases: ['고양', 'Goyang'], ko: '고양', en: 'Goyang' },
+  { aliases: ['상무', 'Sangmu'], ko: '상무', en: 'Sangmu' },
+  { aliases: ['울산', 'Ulsan'], ko: '울산', en: 'Ulsan' },
 ]
 const normalizeTeam = (value: string) => value.toLowerCase().replace(/\s/g, '')
 export function teamName(team: string, locale: Locale) {
