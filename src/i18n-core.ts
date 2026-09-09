@@ -1,23 +1,23 @@
 export type Locale = 'ko' | 'en'
 
-// Korean values remain the API's canonical keys. Only presentation is localized.
-const teams: Array<{ aliases: string[]; name: string; short: string }> = [
-  { aliases: ['KIA', '기아', 'KIA 타이거즈'], name: 'KIA Tigers', short: 'KIA' },
-  { aliases: ['LG', '엘지', 'LG 트윈스'], name: 'LG Twins', short: 'LG' },
-  { aliases: ['삼성', '삼성 라이온즈'], name: 'Samsung Lions', short: 'Samsung' },
-  { aliases: ['두산', '두산 베어스'], name: 'Doosan Bears', short: 'Doosan' },
-  { aliases: ['KT', 'KT 위즈', '케이티'], name: 'KT Wiz', short: 'KT' },
-  { aliases: ['SSG', 'SSG 랜더스'], name: 'SSG Landers', short: 'SSG' },
-  { aliases: ['롯데', '롯데 자이언츠'], name: 'Lotte Giants', short: 'Lotte' },
-  { aliases: ['한화', '한화 이글스'], name: 'Hanwha Eagles', short: 'Hanwha' },
-  { aliases: ['NC', 'NC 다이노스'], name: 'NC Dinos', short: 'NC' },
-  { aliases: ['키움', '키움 히어로즈'], name: 'Kiwoom Heroes', short: 'Kiwoom' },
+// API values remain unchanged; every team label displays only its company name.
+const teams: Array<{ aliases: string[]; ko: string; en: string }> = [
+  { aliases: ['KIA', '기아'], ko: 'KIA', en: 'KIA' },
+  { aliases: ['LG', '엘지'], ko: 'LG', en: 'LG' },
+  { aliases: ['삼성', 'Samsung'], ko: '삼성', en: 'Samsung' },
+  { aliases: ['두산', 'Doosan'], ko: '두산', en: 'Doosan' },
+  { aliases: ['KT', '케이티'], ko: 'KT', en: 'KT' },
+  { aliases: ['SSG'], ko: 'SSG', en: 'SSG' },
+  { aliases: ['롯데', 'Lotte'], ko: '롯데', en: 'Lotte' },
+  { aliases: ['한화', 'Hanwha'], ko: '한화', en: 'Hanwha' },
+  { aliases: ['NC'], ko: 'NC', en: 'NC' },
+  { aliases: ['키움', 'Kiwoom'], ko: '키움', en: 'Kiwoom' },
 ]
 const normalizeTeam = (value: string) => value.toLowerCase().replace(/\s/g, '')
-export function teamName(team: string, locale: Locale, short = false) {
-  if (locale === 'ko') return team
-  const match = teams.find(entry => entry.aliases.some(alias => normalizeTeam(alias) === normalizeTeam(team)))
-  return match ? (short ? match.short : match.name) : team
+export function teamName(team: string, locale: Locale) {
+  const normalized = normalizeTeam(team)
+  const match = teams.find(entry => entry.aliases.some(alias => normalized.startsWith(normalizeTeam(alias))))
+  return match ? match[locale] : team
 }
 const positions: Record<string, [string, string]> = {
   '감독': ['Manager', 'Mgr'], '코치': ['Coach', 'Coach'], '투수': ['Pitcher', 'P'],
@@ -93,7 +93,7 @@ export const english = {
   '게임 규칙 보기': 'How to play',
   '어떻게 맞히나요?': 'How to play',
   '닫기': 'Close',
-  '선수 정보를 비교하며 숨겨진 한국 프로야구 선수를 최대 9번 안에 맞혀보세요.': 'Compare player details to identify the mystery KBO player in 9 guesses or fewer.',
+  '선수 정보를 비교하며 숨겨진 한국 프로야구 선수를 최대 9번 안에 맞혀보세요.': 'Compare player details to identify the mystery baseball player in 9 guesses or fewer.',
   '게임 범위를 정해요': 'Choose your pool',
   '출제 구단과 1군·퓨처스, 감독·코치 포함 여부를 선택하면 정답 선수가 정해집니다.': 'Choose teams, first-team or Futures rosters, and whether to include managers and coaches.',
   '선수를 추측해요': 'Make a guess',
@@ -135,7 +135,7 @@ export const english = {
   '매일 새벽 4:00~4:05에는 최신 선수 정보 반영을 위해 잠시 이용할 수 없습니다.': 'The game pauses daily from 4:00–4:05 AM Korea Standard Time (UTC+9) while player information is updated.',
   '라이트 모드': 'Light mode',
   '다크 모드': 'Dark mode',
-  '한국 프로야구': 'Know your KBO?',
+  '한국 프로야구': 'Know your baseball?',
   '선수를 맞혀보세요.': 'Guess the player.',
   '구단을 선택하면 해당 구단 선수 중 한 명이 정답으로 출제됩니다.': 'Choose your teams and uncover a mystery Korean baseball player.',
   '1군': 'First team',

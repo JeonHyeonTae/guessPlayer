@@ -16,9 +16,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try { window.localStorage.setItem(STORAGE_KEY, locale) } catch { /* The current session still works. */ }
     document.documentElement.lang = locale
-    document.title = locale === 'en' ? 'Nu-Kya! | Guess the KBO Player' : '누크야! | 한국 프로야구 선수 맞추기'
+    document.title = locale === 'en' ? 'Nu-Kya! | Baseball Player Guessing Game' : '누크야! | 한국 프로야구 선수 맞추기'
     const description = locale === 'en'
-      ? 'Guess the mystery KBO player in 9 tries. Compare teams, positions, jersey numbers, birth years, and more in this free Korean baseball quiz.'
+      ? 'Guess the mystery baseball player in 9 tries. Compare teams, positions, jersey numbers, birth years, and more in this free Korean baseball quiz.'
       : '누크야!는 한국 프로야구 선수의 구단, 포지션, 등번호, 출생연도와 투타 정보를 비교해 정답 선수를 맞히는 무료 야구선수 퀴즈게임입니다.'
     document.querySelector('meta[name="description"]')?.setAttribute('content', description)
     document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title)
@@ -35,7 +35,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const imageUrl = locale === 'en'
       ? 'https://nu-kya.com/thumbnail-en-20260909.jpg'
       : 'https://nu-kya.com/thumbnail.png?v=20260904'
-    const imageAlt = locale === 'en' ? 'Nu-Kya! Guess the KBO Player' : '누크야! 한국 프로야구 선수 맞추기 게임 화면'
+    const imageAlt = locale === 'en' ? 'Nu-Kya! Guess the Baseball Player' : '누크야! 한국 프로야구 선수 맞추기 게임 화면'
     document.querySelector('meta[property="og:image"]')?.setAttribute('content', imageUrl)
     document.querySelector('meta[property="og:image:secure_url"]')?.setAttribute('content', imageUrl)
     document.querySelector('meta[property="og:image:type"]')?.setAttribute('content', locale === 'en' ? 'image/jpeg' : 'image/png')

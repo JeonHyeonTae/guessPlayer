@@ -16,16 +16,39 @@ test('presentation translation preserves the Korean identity used in API payload
   const player = { name: '양현종', nameEn: ' Yang Hyeon Jong ', team: 'KIA', position: '투수' }
   assert.equal(playerName(player, 'en'), 'Yang Hyeon Jong')
   assert.equal(playerName(player, 'ko'), '양현종')
-  assert.equal(teamName(player.team, 'en'), 'KIA Tigers')
-  assert.equal(teamName('삼성', 'en', true), 'Samsung')
+  assert.equal(teamName(player.team, 'en'), 'KIA')
+  assert.equal(teamName('삼성', 'en'), 'Samsung')
   assert.equal(teamName('삼성', 'ko'), '삼성')
-  assert.equal(teamName('kt 위즈', 'en'), 'KT Wiz')
+  assert.equal(teamName('kt 위즈', 'en'), 'KT')
   assert.equal(positionName(player.position, 'en'), 'Pitcher')
   assert.equal(positionName(player.position, 'en', true), 'P')
   assert.equal(handName('양', 'en'), 'S')
   assert.equal(player.name, '양현종')
   assert.equal(player.team, 'KIA')
   assert.equal(player.position, '투수')
+})
+
+test('full team names from either language display only the company name', () => {
+  const teams = [
+    ['KIA 타이거즈', 'KIA Tigers', 'KIA', 'KIA'],
+    ['LG 트윈스', 'LG Twins', 'LG', 'LG'],
+    ['삼성 라이온즈', 'Samsung Lions', '삼성', 'Samsung'],
+    ['두산 베어스', 'Doosan Bears', '두산', 'Doosan'],
+    ['KT 위즈', 'KT Wiz', 'KT', 'KT'],
+    ['SSG 랜더스', 'SSG Landers', 'SSG', 'SSG'],
+    ['롯데 자이언츠', 'Lotte Giants', '롯데', 'Lotte'],
+    ['한화 이글스', 'Hanwha Eagles', '한화', 'Hanwha'],
+    ['NC 다이노스', 'NC Dinos', 'NC', 'NC'],
+    ['키움 히어로즈', 'Kiwoom Heroes', '키움', 'Kiwoom'],
+  ]
+  for (const [fullKo, fullEn, companyKo, companyEn] of teams) {
+    for (const input of [fullKo, fullEn, companyKo, companyEn.toLowerCase()]) {
+      assert.equal(teamName(input, 'ko'), companyKo)
+      assert.equal(teamName(input, 'en'), companyEn)
+    }
+  }
+  assert.equal(teamName(' 기아 ', 'ko'), 'KIA')
+  assert.equal(teamName('엘지', 'en'), 'LG')
 })
 
 test('legacy responses keep a visible player name and result hashtags never contain spaces', () => {

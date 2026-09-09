@@ -14,7 +14,7 @@ const positionOrder = ['감독', '코치', '투수', '포수', '내야수', '외
 function displayField(player: PickedPlayer, key: keyof PickedPlayer, locale: Locale) {
   const value = player[key]
   if (value === null || value === undefined) return '—'
-  if (key === 'team') return teamName(String(value), locale, true)
+  if (key === 'team') return teamName(String(value), locale)
   if (key === 'position') return positionName(String(value), locale, true)
   if (key === 'throwingHand' || key === 'battingSide') return handName(String(value), locale)
   return String(value)
