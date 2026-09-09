@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { CheonsindangBanner } from './CheonsindangBanner'
 import { campaignsForTeams, cheonsindangCampaigns, type CheonsindangCampaign } from './cheonsindangCampaigns'
+import { useI18n } from './i18n'
 
 declare global {
   interface Window {
@@ -15,6 +16,8 @@ const mobileQuery = '(max-width: 600px)'
 const CAMPAIGN_ROTATION_MS = 5000
 
 function CoupangBanner({ className = '', isMobile }: { className?: string; isMobile: boolean }) {
+  const { locale } = useI18n()
+  const label = locale === 'en' ? 'Coupang Partners advertisement (Korean)' : '쿠팡 파트너스 광고'
   // The Partners script writes its markup as it runs. Keeping it in an iframe
   // makes that write deterministic and confines the third-party markup.
   const config = isMobile
@@ -25,9 +28,9 @@ function CoupangBanner({ className = '', isMobile }: { className?: string; isMob
   const markup = `<!doctype html><html lang="ko"><head><meta name="viewport" content="width=device-width, initial-scale=1"></head><body style="margin:0;overflow:hidden"><script src="https://ads-partners.coupang.com/g.js"></script><script>new PartnersCoupang.G(${config});</script></body></html>`
 
   return (
-    <aside className={`ad-banner coupang-banner ${className}`.trim()} aria-label="쿠팡 파트너스 광고">
+    <aside className={`ad-banner coupang-banner ${className}`.trim()} aria-label={label}>
       <iframe
-        title="쿠팡 파트너스 광고"
+        title={label}
         srcDoc={markup}
         width={width}
         height={height}
@@ -49,6 +52,7 @@ function loadAdSenseScript(client: string) {
 }
 
 function AdSenseUnit({ className = '' }: { className?: string }) {
+  const { locale } = useI18n()
   const id = useId()
   const [campaign] = useState(() => cheonsindangCampaigns[Math.floor(Math.random() * cheonsindangCampaigns.length)])
   const pushedRef = useRef(false)
@@ -68,7 +72,7 @@ function AdSenseUnit({ className = '' }: { className?: string }) {
   if (!adsenseClient || !adsenseSlot) return null
 
   return (
-    <aside className={`ad-banner ${className}`.trim()} aria-label="Advertisement">
+    <aside className={`ad-banner ${className}`.trim()} aria-label={locale === 'en' ? 'Advertisement' : '광고'}>
       <ins
         key={id}
         className="adsbygoogle"
@@ -84,8 +88,9 @@ function AdSenseUnit({ className = '' }: { className?: string }) {
 }
 
 function FortuneAdUnit({ className = '', campaign }: { className?: string; campaign: CheonsindangCampaign }) {
+  const { locale } = useI18n()
   return (
-    <aside className={`ad-banner fortune-ad ${className}`.trim()} aria-label="포텔리어 광고">
+    <aside className={`ad-banner fortune-ad ${className}`.trim()} aria-label={locale === 'en' ? 'Fortelior advertisement' : '포텔리어 광고'}>
       <CheonsindangBanner campaign={campaign} />
     </aside>
   )

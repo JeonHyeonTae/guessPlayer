@@ -1,9 +1,12 @@
 export type Mode = 'REGULAR' | 'ALL'
 export type Status = 'MATCH' | 'MISMATCH' | 'UP' | 'DOWN'
 
-export interface Player { id: number; name: string; team: string; position: string; birthYear: number }
-export interface RosterPlayer { name: string; team: string; position: string; rosterLevel: 'REGULAR' | 'FUTURES' }
-export interface PickedPlayer extends Player { backNo: number; throwingHand: string; battingSide: string; age: number; height: number; weight: number }
+// Korean fields remain canonical API/filter keys. English names are additive so
+// the frontend can also work during a rolling backend deployment.
+export interface PlayerName { name: string; nameEn?: string | null; nameEnSource?: string | null }
+export interface Player extends PlayerName { id: number; team: string; position: string; birthYear: number }
+export interface RosterPlayer extends PlayerName { team: string; position: string; rosterLevel: 'REGULAR' | 'FUTURES' }
+export interface PickedPlayer extends Player { backNo: number; throwingHand: string; battingSide: string; height: number | null; weight: number | null }
 export interface Guess { picked: PickedPlayer; compare: Record<'team' | 'backNo' | 'position' | 'throwingHand' | 'battingSide' | 'birthYear' | 'height' | 'weight', { status: Status }>; isCorrect: boolean }
 export interface GameState { mode: Mode; includeStaff: boolean; teams: string[]; rosterDate: string | null; playerCount: number }
 export interface GameStart extends GameState { gameId: string }

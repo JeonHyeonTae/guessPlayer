@@ -1,5 +1,9 @@
 {
   "rewrites": [
+    { "source": "/en", "destination": "/en/index.html" },
+    { "source": "/en/", "destination": "/en/index.html" },
+    { "source": "/share/en/:team", "destination": "/share/en/:team/index.html" },
+    { "source": "/share/en/:team/", "destination": "/share/en/:team/index.html" },
     { "source": "/share/20260907-v2/lg", "destination": "/share/20260907-v2/lg/index.html" },
     { "source": "/share/20260907/:team", "destination": "/share/20260907/:team/index.html" },
     { "source": "/KT", "destination": "/KT/index.html" },

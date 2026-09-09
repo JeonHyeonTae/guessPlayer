@@ -3548,3 +3548,90 @@ body:has(.banner-preview) { overflow: auto; background: #080e1b; }
   .temperature-banner small { font-size: 9px; }
   .banner-preview .preview-side, .banner-preview .preview-side .ad-fallback { height: 600px; min-height: 600px; max-height: 600px; }
 }
+
+/* Language controls stay available without replacing the active game. */
+.language-toggle {
+  position: fixed;
+  top: 20px;
+  right: 162px;
+  z-index: 11;
+  min-width: 70px;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #3b4664;
+  border-radius: 99px;
+  background: #131a2d;
+  color: #dce4ff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.language-toggle:hover { border-color: #9db2ff; }
+.language-toggle:focus-visible { outline: 3px solid #7890ca; outline-offset: 3px; }
+body.light-theme .language-toggle { border-color: #c8d1e0; color: #33415d; background: #fff; }
+.app .header-actions .language-toggle,
+.app .header-actions .share-button,
+.app .header-actions .rules-button,
+.app .header-actions .theme-toggle { position: relative; top: auto; right: auto; }
+.app .header-actions { flex: none; }
+.daily-update .language-toggle { right: 24px; }
+.landing { padding-top: 86px; padding-bottom: 32px; }
+.share-button.copied,
+body.light-theme .share-button.copied { border-color: #78d49b; background: #1c7549; color: #fff; }
+.share-button.copied::before {
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='m5 12 4.5 4.5L19 7'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+:lang(en) .landing h1 { font-size: clamp(42px, 7vw, 76px); line-height: 1.12; letter-spacing: -.045em; }
+:lang(en) .mode-grid button { font-size: clamp(18px, 2.5vw, 24px); }
+:lang(en) .staff-options button { white-space: normal; }
+:lang(en) .staff-options button span { white-space: normal; }
+:lang(en) .roster-team-selector { flex-wrap: wrap; }
+:lang(en) .roster-team-selector button { width: auto; min-width: 80px; height: auto; min-height: 34px; padding: 6px 9px; }
+:lang(en) .roster-position > b { width: 85px; min-width: 85px; }
+:lang(en) .roster-player { white-space: normal; }
+:lang(en) .row strong { overflow-wrap: anywhere; }
+:lang(en) .cell { word-break: normal; overflow-wrap: anywhere; }
+:lang(en) .rules-color { flex-basis: 58px; }
+:lang(en) .answer h2 { overflow-wrap: anywhere; }
+:lang(en) .answer-modal h2 { line-height: 1.2; }
+:lang(en) .share-menu-list { width: min(320px, calc(100vw - 32px)); }
+.search-feedback { padding: 14px 16px; font-size: 13px; line-height: 1.5; }
+
+@media (max-width: 600px) {
+  .app > header { gap: 6px; }
+  .app .header-actions { gap: 5px; }
+  .app .header-actions .language-toggle { min-width: 60px; height: 32px; padding: 0 7px; font-size: 11px; }
+  .app .header-actions .share-button,
+  .app .header-actions .rules-button,
+  .app .header-actions .theme-toggle { width: 32px; height: 32px; }
+  .app .brand-mark { gap: 4px; font-size: 18px; }
+  .app .brand-mark img { width: 24px; height: 24px; }
+  :lang(en) .landing { padding-top: 82px; }
+  :lang(en) .landing h1 { font-size: clamp(32px, 8.6vw, 48px); }
+  :lang(en) .mode-grid button,
+  :lang(en) .staff-toggle .staff-options button { font-size: 14px; padding: 12px 10px; }
+  :lang(en) .mode-grid span,
+  :lang(en) .staff-options button span { font-size: 10px; line-height: 1.45; }
+  :lang(en) .team-picker .team-list,
+  :lang(en) .modal-team-picker .team-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  :lang(en) .team-picker .team-list button,
+  :lang(en) .modal-team-picker .team-list button { padding: 7px 5px; font-size: 11px; }
+  :lang(en) .hero-title-row { display: grid; grid-template-columns: minmax(0, 1fr) 30px auto auto; gap: 5px; }
+  :lang(en) .hero-title-row h1 { min-width: 0; font-size: clamp(20px, 5.5vw, 30px); line-height: 1.14; }
+  :lang(en) .hero-title-row .action-roster,
+  :lang(en) .hero-title-row .action-teams { order: initial; align-self: center; height: 30px; margin: 0; padding: 0 7px; font-size: 11px; }
+  :lang(en) .board { overflow-x: auto; overflow-y: hidden; }
+  :lang(en) .board .grid { width: 100%; min-width: 570px; grid-template-columns: 122px 64px 36px 38px 36px 34px 44px 44px 44px; gap: 3px; }
+  :lang(en) .board-rows { min-width: 570px; }
+  :lang(en) .board .row strong { font-size: 11px; line-height: 1.35; }
+  :lang(en) .cell { font-size: 10px; min-height: 46px; }
+  :lang(en) .grid.header { font-size: 9px; }
+  :lang(en) .roster-team-selector button { min-width: 0; font-size: 11px; }
+  :lang(en) .roster-position > b { width: 70px; min-width: 70px; font-size: 11px; }
+  :lang(en) .modal-mode-grid button { padding: 14px 10px; }
+  :lang(en) .roster-date-tooltip { left: 0; transform: translateX(-28%); }
+}
+:lang(en) .roster-position { grid-template-columns: 85px minmax(0, 1fr); }
+@media (max-width: 600px) {
+  :lang(en) .roster-position { grid-template-columns: 70px minmax(0, 1fr); gap: 8px; }
+}

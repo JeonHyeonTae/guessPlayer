@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://nu-kya.com/</loc>
-    <lastmod>2026-09-04</lastmod>
+    <lastmod>2026-09-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://nu-kya.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://nu-kya.com/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://nu-kya.com/" />
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://nu-kya.com/en/</loc>
+    <lastmod>2026-09-09</lastmod>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://nu-kya.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://nu-kya.com/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://nu-kya.com/" />
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
