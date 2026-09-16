@@ -40,22 +40,32 @@ export function playerHashtag(player: { name: string; nameEn?: string | null }, 
   return `#${playerName(player, locale).replace(/[^\p{L}\p{M}\p{N}_]/gu, '')}`
 }
 
+function homeLocale(pathname: string): Locale | null {
+  if (pathname === '/' || pathname === '/index.html') return 'ko'
+  if (/^\/en(?:\/(?:index\.html)?)?$/.test(pathname)) return 'en'
+  return null
+}
+
 export function resolveLocale({ search = '', pathname = '/', stored, browserLanguage = 'ko' }: {
   search?: string; pathname?: string; stored?: string | null; browserLanguage?: string
 }): Locale {
   const requested = new URLSearchParams(search).get('lang')
   if (requested === 'ko' || requested === 'en') return requested
-  if (/^\/en\/?$/.test(pathname)) return 'en'
+  // Each indexed homepage must render the same language for every visitor/crawler.
+  const pageLocale = homeLocale(pathname)
+  if (pageLocale) return pageLocale
   if (stored === 'ko' || stored === 'en') return stored
   return browserLanguage.toLowerCase().startsWith('ko') ? 'ko' : 'en'
 }
 
 export function localizedPath(path: string, locale: Locale) {
   const url = new URL(path, 'https://nu-kya.com')
-  if (url.pathname === '/' || /^\/en\/?$/.test(url.pathname)) {
+  if (homeLocale(url.pathname)) {
     url.pathname = locale === 'en' ? '/en/' : '/'
+    url.searchParams.delete('lang')
+  } else {
+    url.searchParams.set('lang', locale)
   }
-  url.searchParams.set('lang', locale)
   return `${url.pathname}${url.search}${url.hash}`
 }
 

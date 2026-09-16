@@ -3551,6 +3551,10 @@ body:has(.banner-preview) { overflow: auto; background: #080e1b; }
 
 /* Language controls stay available without replacing the active game. */
 .language-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   position: fixed;
   top: 20px;
   right: 162px;

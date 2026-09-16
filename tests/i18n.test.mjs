@@ -2,14 +2,49 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { resolveLocale, localizedPath, playerName, playerHashtag, teamName, positionName, handName, isDailyUpdateWindow, formatRosterDate } from '../src/i18n-core.ts'
 
-test('explicit link language overrides stored/browser language, with a stable English entry', () => {
-  assert.equal(resolveLocale({ search: '?lang=en', stored: 'ko', browserLanguage: 'ko-KR' }), 'en')
-  assert.equal(resolveLocale({ search: '?lang=ko', pathname: '/en/', stored: 'en', browserLanguage: 'en-US' }), 'ko')
-  assert.equal(resolveLocale({ pathname: '/en/', stored: 'ko' }), 'en')
-  assert.equal(resolveLocale({ stored: 'ko', browserLanguage: 'en-US' }), 'ko')
-  assert.equal(resolveLocale({ search: '?lang=invalid', stored: 'invalid', browserLanguage: 'ko-KR' }), 'ko')
-  assert.equal(resolveLocale({ browserLanguage: 'ja-JP' }), 'en')
+const homePaths = [['/', 'ko'], ['/index.html', 'ko'], ['/en', 'en'], ['/en/', 'en'], ['/en/index.html', 'en']]
+
+test('homepage language stays tied to its URL for visitors and crawlers in any language', () => {
+  for (const [pathname, expected] of homePaths) {
+    for (const stored of [null, 'ko', 'en', 'invalid']) {
+      for (const browserLanguage of ['ko-KR', 'en-US', 'ja-JP']) {
+        for (const search of ['', '?lang=invalid', '?ref=friend']) {
+          assert.equal(resolveLocale({ pathname, search, stored, browserLanguage }), expected,
+            JSON.stringify({ pathname, search, stored, browserLanguage }))
+        }
+      }
+    }
+  }
+})
+
+test('explicit link language overrides homepage language and saved preferences', () => {
+  for (const pathname of [...homePaths.map(([path]) => path), '/game/123']) {
+    assert.equal(resolveLocale({ pathname, search: '?lang=en', stored: 'ko', browserLanguage: 'ko-KR' }), 'en')
+    assert.equal(resolveLocale({ pathname, search: '?lang=ko', stored: 'en', browserLanguage: 'en-US' }), 'ko')
+  }
+})
+
+test('game URLs retain saved and browser language fallback', () => {
+  const pathname = '/game/123'
+  assert.equal(resolveLocale({ pathname, stored: 'ko', browserLanguage: 'en-US' }), 'ko')
+  assert.equal(resolveLocale({ pathname, stored: 'en', browserLanguage: 'ko-KR' }), 'en')
+  assert.equal(resolveLocale({ pathname, search: '?lang=invalid', stored: 'invalid', browserLanguage: 'ko-KR' }), 'ko')
+  assert.equal(resolveLocale({ pathname, browserLanguage: 'ja-JP' }), 'en')
+  assert.equal(resolveLocale({ pathname, browserLanguage: 'en-US' }), 'en')
+})
+
+test('homepage URLs normalize without duplicate language queries and preserve navigation context', () => {
+  for (const [pathname] of homePaths) {
+    for (const locale of ['ko', 'en']) {
+      const expectedHome = locale === 'ko' ? '/' : '/en/'
+      assert.equal(localizedPath(pathname, locale), expectedHome)
+      const localized = localizedPath(`https://nu-kya.com${pathname}?lang=ko&ref=friend&lang=en#rules`, locale)
+      assert.equal(localized, `${expectedHome}?ref=friend#rules`)
+      assert.equal(localizedPath(localized, locale), localized)
+    }
+  }
   assert.equal(localizedPath('/game/123?ref=friend#board', 'en'), '/game/123?ref=friend&lang=en#board')
+  assert.equal(localizedPath('/game/123?ref=friend&lang=en#board', 'ko'), '/game/123?ref=friend&lang=ko#board')
 })
 
 test('presentation translation preserves the Korean identity used in API payloads', () => {

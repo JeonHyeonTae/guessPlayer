@@ -18,8 +18,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = locale
     document.title = locale === 'en' ? 'Nu-Kya! | Baseball Player Guessing Game' : '누크야! | 한국 프로야구 선수 맞추기'
     const description = locale === 'en'
-      ? 'Guess the mystery baseball player in 9 tries. Compare teams, positions, jersey numbers, birth years, and more in this free Korean baseball quiz.'
-      : '누크야!는 한국 프로야구 선수의 구단, 포지션, 등번호, 출생연도와 투타 정보를 비교해 정답 선수를 맞히는 무료 야구선수 퀴즈게임입니다.'
+      ? 'Guess the Korean baseball player using clues about their team, position, jersey number, birth year, and throwing and batting hand. Play Nu-Kya!, a free baseball quiz.'
+      : '누크야!는 한국 프로야구 선수의 구단, 포지션, 등번호, 출생연도와 투타 정보를 비교해 정답 선수를 맞히는 무료 야구선수 퀴즈 게임입니다.'
     document.querySelector('meta[name="description"]')?.setAttribute('content', description)
     document.querySelector('meta[property="og:title"]')?.setAttribute('content', document.title)
     document.querySelector('meta[property="og:description"]')?.setAttribute('content', description)
@@ -45,7 +45,22 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.querySelector('meta[name="twitter:card"]')?.setAttribute('content', 'summary_large_image')
     document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', imageUrl)
     document.querySelector('meta[name="twitter:image:alt"]')?.setAttribute('content', imageAlt)
-    window.history.replaceState(null, '', localizedPath(window.location.href, locale))
+    document.querySelector('meta[name="keywords"]')?.setAttribute('content', locale === 'en'
+      ? 'Nu-Kya, Korean baseball, baseball player guessing game, baseball quiz, baseball trivia'
+      : '누크야, 누크야!, 한국 프로야구 선수 맞추기, 야구선수 맞추기, 프로야구 퀴즈, 야구 퀴즈')
+    const websiteSchema = document.getElementById('website-schema')
+    if (websiteSchema) websiteSchema.textContent = JSON.stringify({
+      '@context': 'https://schema.org', '@type': 'WebSite',
+      name: locale === 'en' ? 'Nu-Kya!' : '누크야!',
+      alternateName: locale === 'en' ? ['Nu-Kya', 'Baseball Player Guessing Game'] : ['누크야', '한국 프로야구 선수 맞추기', '야구선수 맞추기'],
+      url: canonical,
+      description: locale === 'en' ? 'A free quiz to guess Korean professional baseball players' : '한국 프로야구 선수를 맞히는 무료 야구 퀴즈 게임',
+      inLanguage: locale,
+    })
+    const path = localizedPath(window.location.href, locale)
+    if (path !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+      window.history.replaceState(window.history.state, '', path)
+    }
   }, [locale])
   return <LanguageContext.Provider value={{ locale, setLocale }}>{children}</LanguageContext.Provider>
 }
@@ -57,5 +72,11 @@ export function useI18n() {
 
 export function LanguageToggle() {
   const { locale, setLocale } = useI18n()
-  return <button className="language-toggle" type="button" onClick={() => setLocale(locale === 'ko' ? 'en' : 'ko')} aria-label={locale === 'ko' ? 'Switch to English' : '한국어로 변경'} lang={locale === 'ko' ? 'en' : 'ko'}>{locale === 'ko' ? 'English' : '한국어'}</button>
+  const nextLocale = locale === 'ko' ? 'en' : 'ko'
+  return <a className="language-toggle" href={localizedPath(window.location.href, nextLocale)} hrefLang={nextLocale} lang={nextLocale}
+    onClick={event => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      event.preventDefault()
+      setLocale(nextLocale)
+    }} aria-label={locale === 'ko' ? 'Switch to English' : '한국어로 변경'}>{locale === 'ko' ? 'English' : '한국어'}</a>
 }
