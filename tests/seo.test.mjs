@@ -51,8 +51,29 @@ test('robots and sitemap expose both canonical entry pages and matching language
   assert.ok(robots.includes(`Sitemap: ${origin}/sitemap.xml`))
 
   const entries = [...read('public/sitemap.xml').matchAll(/<url>([\s\S]*?)<\/url>/g)].map(([, entry]) => entry)
-  assert.deepEqual(entries.map(entry => entry.match(/<loc>([^<]+)<\/loc>/)?.[1]), pages.map(page => page.canonical))
+  assert.deepEqual(entries.map(entry => entry.match(/<loc>([^<]+)<\/loc>/)?.[1]), [...pages.map(page => page.canonical), ...['', '/en'].flatMap(base => ['about'].map(slug => `${origin}${base}/${slug}/`))])
   for (const entry of entries) {
-    assert.deepEqual(Object.fromEntries(tags(entry, 'xhtml:link').map(tag => [tag.hreflang, tag.href])), alternates)
+    const loc = entry.match(/<loc>([^<]+)<\/loc>/)?.[1]
+    const slug = loc.match(/\/(about)\/$/)?.[1]
+    const expected = slug ? { ko: `${origin}/${slug}/`, en: `${origin}/en/${slug}/`, 'x-default': `${origin}/${slug}/` } : alternates
+    assert.deepEqual(Object.fromEntries(tags(entry, 'xhtml:link').map(tag => [tag.hreflang, tag.href])), expected)
+  }
+})
+
+test('information pages are readable without scripts and have working local navigation', () => {
+  for (const base of ['', '/en']) {
+    for (const slug of ['about', 'privacy']) {
+      const html = read(`public${base}/${slug}/index.html`)
+      assert.match(html, /<h1>/)
+      assert.match(html, /<h2>/)
+      assert.doesNotMatch(html, /<script\b/)
+      assert.ok(html.includes(`href="${origin}${base}/${slug}/"`))
+      assert.equal(tags(html, 'html')[0].lang, base ? 'en' : 'ko')
+      for (const { href } of tags(html, 'a')) {
+        if (href?.startsWith('/') && href !== '/' && href !== '/en/') {
+          assert.ok(read(`public${href}index.html`), href)
+        }
+      }
+    }
   }
 })
