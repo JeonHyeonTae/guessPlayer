@@ -1015,7 +1015,7 @@ function GameApp() {
             <p className="first-guess-tip">
               {locale === "en"
                 ? "Search for a player to start. For example, 1995 ↑ means the answer was born after 1995."
-                : "선수 이름을 검색해 첫 추측을 해보세요. \n 출생연도 1995 ↑는 정답이 1995년 이후에 태어났다는 뜻이에요."}
+                : "선수 이름을 입력하세요."}
             </p>
           )}
           {guesses.map((guess, index) => (
