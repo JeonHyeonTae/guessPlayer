@@ -2738,11 +2738,6 @@ body.light-theme .modal-staff-toggle .staff-options button {
 }
 .fortune-ad { height: 88px; min-height: 88px; }
 .fortune-ad .ad-fallback { display: flex; }
-.landing-ad {
-  max-height: 88px;
-  margin-top: 18px;
-  margin-bottom: 0;
-}
 .coupang-banner {
   display: flex;
   justify-content: center;
@@ -2949,23 +2944,6 @@ body.light-theme .modal-staff-toggle .staff-options button {
   }
 }
 @media (max-width: 600px) {
-  .landing .landing-ad {
-    display: block;
-    height: 88px;
-    min-height: 88px;
-    max-height: 88px;
-    margin: 12px 0 0;
-  }
-  .landing
-    .landing-ad:not(:has(.adsbygoogle[data-ad-status="filled"]))
-    .adsbygoogle {
-    position: absolute;
-    inset: 0;
-    height: 88px !important;
-    min-height: 88px !important;
-    max-height: 88px !important;
-    pointer-events: none;
-  }
   .landing .mode-grid {
     margin-top: 12px;
   }
@@ -3640,15 +3618,14 @@ body.light-theme .share-button.copied { border-color: #78d49b; background: #1c75
   :lang(en) .roster-position { grid-template-columns: 70px minmax(0, 1fr); gap: 8px; }
 }
 
-/* A compact, self-contained guide below game setup. */
+/* The same clue card appears below setup and in the rules dialog. */
 .landing > .home-guide {
   --guide-border: #35415a;
   --guide-muted: #aebbd0;
   --guide-surface: #182238;
   --guide-cell: #2c374c;
-  margin: 56px auto 0;
-  padding: 28px 0 0;
-  border-top: 1px solid var(--guide-border);
+  margin: 28px auto 0;
+  padding: 0;
   text-align: left;
 }
 .home-guide .play-guide-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
@@ -3684,7 +3661,7 @@ body.light-theme .share-button.copied { border-color: #78d49b; background: #1c75
 body.light-theme .home-guide { --guide-border: #dce1e9; --guide-muted: #617087; --guide-surface: #fff; --guide-cell: #e9ecf1; }
 .home-guide :is(a, summary):focus-visible { outline: 2px solid #688bdb; outline-offset: 4px; border-radius: 3px; }
 @media (max-width: 640px) {
-  .landing > .home-guide { margin-top: 36px; padding-top: 24px; }
+  .landing > .home-guide { margin-top: 20px; }
   .home-guide .play-guide-header { align-items: flex-start; gap: 12px; }
   .home-guide .play-guide-header p { font-size: 12px; }
   .home-guide h2 { font-size: 20px; }
@@ -3704,5 +3681,6 @@ body.light-theme .rules-modal .play-guide-example { --guide-border: #d2dae8; --g
 .first-guess-tip { max-width: 520px; margin: 24px auto; padding: 0 16px; color: #a7b0c6; font-size: 13px; line-height: 1.8; text-align: center; }
 body.light-theme .first-guess-tip { color: #526078; }
 .app > .game-ad { margin-top: 36px; }
+.app > .game-ad:has(.adsbygoogle) { margin-top: 160px; }
 .landing > .site-footer { margin-top: 24px; padding: 16px 0 0; border-top: 0; }
 .site-footer nav { justify-content: center; }

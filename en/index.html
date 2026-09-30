@@ -7,6 +7,21 @@
     <link rel="icon" type="image/png" href="/nukeya-mark.png" />
     <link rel="apple-touch-icon" href="/nukeya-mark.png" />
     <meta name="google-adsense-account" content="ca-pub-3077425787731419" />
+    <style>
+      html { background: #0b1020; }
+      .static-home { max-width: 760px; margin: 48px auto; padding: 24px; font: 16px/1.6 system-ui, sans-serif; color: #e8edff; background: #0b1020; }
+      .static-home h1 { font-size: clamp(32px, 7vw, 56px); line-height: 1.15; }
+      .static-home a { color: #b7c7ff; }
+      .static-home figure { margin: 28px 0; padding: 20px; border: 1px solid #465574; border-radius: 10px; background: #182238; }
+      .static-home figcaption { font-weight: 700; }
+      .static-home dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0; }
+      .static-home dl div { padding: 12px; border-radius: 5px; background: #2c374c; }
+      .static-home dl div:first-child { background: #287c57; }
+      .static-home dt { font-size: 12px; color: #aebbd0; }
+      .static-home dd { margin: 0; font-weight: 700; }
+      .static-home nav { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+      @media (max-width: 480px) { .static-home dl { grid-template-columns: 1fr; } }
+    </style>
     <script async src="https://www.googletagmanager.com/gtag/js?id=%VITE_GA_MEASUREMENT_ID%"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -56,13 +71,25 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
-    <noscript>
-      <main>
-        <h1>Nu-Kya! | Baseball Player Guessing Game</h1>
-        <p>Guess the Korean professional baseball player using clues about their team, position, jersey number, birth year, and throwing and batting hand.</p>
-        <p>Choose first-team or Futures League rosters and your favorite teams, then enable JavaScript to play the free quiz.</p>
+    <div id="root">
+      <main class="static-home">
+        <p>Nu-Kya!</p>
+        <h1>Guess the Korean baseball player.</h1>
+        <p>Choose first-team or Futures rosters and your teams, then use player clues to find the answer within nine guesses.</p>
+        <figure>
+          <figcaption>Reading a guess · Example</figcaption>
+          <dl>
+            <div><dt>Team</dt><dd>LG ✓</dd></div>
+            <div><dt>Birth year</dt><dd>1995 ↑</dd></div>
+            <div><dt>Height</dt><dd>185 ↓</dd></div>
+          </dl>
+          <p>Look for an LG player born after 1995 who is shorter than 185 cm. Green means a match; ↑ and ↓ point toward the answer.</p>
+        </figure>
+        <nav aria-label="Site information"><a href="/en/about/">About &amp; contact</a><a href="/en/privacy/">Privacy information</a><a href="/" lang="ko">한국어</a></nav>
       </main>
+    </div>
+    <noscript>
+      <p>Enable JavaScript in your browser to play the game.</p>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>

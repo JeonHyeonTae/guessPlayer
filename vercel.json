@@ -1,4 +1,10 @@
 {
+  "redirects": [
+    {"source": "/guide", "destination": "/", "permanent": true},
+    {"source": "/guide/", "destination": "/", "permanent": true},
+    {"source": "/en/guide", "destination": "/en/", "permanent": true},
+    {"source": "/en/guide/", "destination": "/en/", "permanent": true}
+  ],
   "rewrites": [
     {"source": "/about", "destination": "/about/index.html"},
     {"source": "/about/", "destination": "/about/index.html"},

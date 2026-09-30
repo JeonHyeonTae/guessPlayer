@@ -7,6 +7,21 @@
     <link rel="icon" type="image/png" href="/nukeya-mark.png" />
     <link rel="apple-touch-icon" href="/nukeya-mark.png" />
     <meta name="google-adsense-account" content="ca-pub-3077425787731419" />
+    <style>
+      html { background: #0b1020; }
+      .static-home { max-width: 760px; margin: 48px auto; padding: 24px; font: 16px/1.6 system-ui, sans-serif; color: #e8edff; background: #0b1020; }
+      .static-home h1 { font-size: clamp(32px, 7vw, 56px); line-height: 1.15; }
+      .static-home a { color: #b7c7ff; }
+      .static-home figure { margin: 28px 0; padding: 20px; border: 1px solid #465574; border-radius: 10px; background: #182238; }
+      .static-home figcaption { font-weight: 700; }
+      .static-home dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0; }
+      .static-home dl div { padding: 12px; border-radius: 5px; background: #2c374c; }
+      .static-home dl div:first-child { background: #287c57; }
+      .static-home dt { font-size: 12px; color: #aebbd0; }
+      .static-home dd { margin: 0; font-weight: 700; }
+      .static-home nav { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+      @media (max-width: 480px) { .static-home dl { grid-template-columns: 1fr; } }
+    </style>
     <script async src="https://www.googletagmanager.com/gtag/js?id=%VITE_GA_MEASUREMENT_ID%"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -56,13 +71,25 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
-    <noscript>
-      <main>
-        <h1>누크야! | 한국 프로야구 선수 맞추기</h1>
-        <p>누크야!는 한국 프로야구 선수의 구단, 포지션, 등번호, 출생연도, 투타 정보를 비교해 정답을 맞히는 무료 퀴즈 게임입니다.</p>
-        <p>1군 또는 퓨처스 로스터와 원하는 구단을 선택해 한국 프로야구 선수 맞추기를 시작하세요.</p>
+    <div id="root">
+      <main class="static-home">
+        <p>누크야!</p>
+        <h1>한국 프로야구<br />선수를 맞혀보세요.</h1>
+        <p>1군 또는 퓨처스 명단과 출제 구단을 고른 뒤, 선수 정보를 비교해 9번 안에 정답을 찾는 야구 퀴즈입니다.</p>
+        <figure>
+          <figcaption>결과는 이렇게 읽어요 · 예시</figcaption>
+          <dl>
+            <div><dt>구단</dt><dd>LG ✓</dd></div>
+            <div><dt>출생연도</dt><dd>1995 ↑</dd></div>
+            <div><dt>키</dt><dd>185 ↓</dd></div>
+          </dl>
+          <p>LG 소속이면서 1995년 이후에 태어나고 키가 185cm보다 작은 선수를 찾으면 돼요. 초록은 일치, ↑·↓는 정답을 향한 방향입니다.</p>
+        </figure>
+        <nav aria-label="사이트 안내"><a href="/about/">서비스 소개·문의</a><a href="/privacy/">개인정보 안내</a><a href="/en/" lang="en">English</a></nav>
       </main>
+    </div>
+    <noscript>
+      <p>게임을 플레이하려면 브라우저에서 JavaScript를 켜주세요.</p>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>

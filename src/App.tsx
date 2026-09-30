@@ -881,7 +881,6 @@ function GameApp() {
               ? "Choose your teams. Find the player in nine guesses."
               : "구단을 고르고, 9번 안에 선수를 맞혀보세요."}
           </p>
-          <AdSenseBanner className="landing-ad" teams={selectedTeams} />
           <div className="mode-grid">
             <button
               className={setupMode === "REGULAR" ? "selected" : undefined}
@@ -946,6 +945,12 @@ function GameApp() {
               : t("선택한 구단으로 시작하기")}
           </button>
           {message && <div className="notice">{t(message)}</div>}
+        </section>
+        <section
+          className="home-guide"
+          aria-label={locale === "en" ? "How guess clues work" : "추측 단서 예시"}
+        >
+          <ClueExample en={locale === "en"} />
         </section>
         <SiteFooter />
         {isRulesOpen && <RulesModal onClose={() => setIsRulesOpen(false)} />}
@@ -1141,20 +1146,20 @@ function GameApp() {
           </div>
         </div>
       </section>
-      <AdSenseBanner
-        className="game-ad"
-        teams={gameTeams}
-        allowGoogleAds={
-          guesses.length > 0 &&
-          !!meta &&
-          !message &&
-          !finished &&
-          !isStartingGame &&
-          !isRulesOpen &&
-          !isRosterOpen &&
-          !isTeamPickerOpen
-        }
-      />
+      {guesses.length > 0 &&
+        meta &&
+        !message &&
+        !finished &&
+        !isStartingGame &&
+        !isSubmitting &&
+        !isRulesOpen &&
+        !isRosterOpen &&
+        !isTeamPickerOpen && (
+          <AdSenseBanner
+            className="game-ad"
+            teams={gameTeams}
+          />
+        )}
       <SiteFooter />
       {isRulesOpen && <RulesModal onClose={() => setIsRulesOpen(false)} />}
       {answer && isAnswerModalOpen && (

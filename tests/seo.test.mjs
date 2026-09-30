@@ -51,10 +51,10 @@ test('robots and sitemap expose both canonical entry pages and matching language
   assert.ok(robots.includes(`Sitemap: ${origin}/sitemap.xml`))
 
   const entries = [...read('public/sitemap.xml').matchAll(/<url>([\s\S]*?)<\/url>/g)].map(([, entry]) => entry)
-  assert.deepEqual(entries.map(entry => entry.match(/<loc>([^<]+)<\/loc>/)?.[1]), [...pages.map(page => page.canonical), ...['', '/en'].flatMap(base => ['about'].map(slug => `${origin}${base}/${slug}/`))])
+  assert.deepEqual(entries.map(entry => entry.match(/<loc>([^<]+)<\/loc>/)?.[1]), [...pages.map(page => page.canonical), ...['about', 'privacy'].flatMap(slug => ['', '/en'].map(base => `${origin}${base}/${slug}/`))])
   for (const entry of entries) {
     const loc = entry.match(/<loc>([^<]+)<\/loc>/)?.[1]
-    const slug = loc.match(/\/(about)\/$/)?.[1]
+    const slug = loc.match(/\/(about|privacy)\/$/)?.[1]
     const expected = slug ? { ko: `${origin}/${slug}/`, en: `${origin}/en/${slug}/`, 'x-default': `${origin}/${slug}/` } : alternates
     assert.deepEqual(Object.fromEntries(tags(entry, 'xhtml:link').map(tag => [tag.hreflang, tag.href])), expected)
   }
