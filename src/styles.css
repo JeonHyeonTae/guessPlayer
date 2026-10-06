@@ -3643,11 +3643,15 @@ body.light-theme .share-button.copied { border-color: #78d49b; background: #1c75
 .play-guide-example figcaption { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; }
 .play-guide-example figcaption > span { font-size: 11px; color: var(--guide-muted); }
 .play-guide-cells { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 20px 0 16px; }
-.play-guide-cells > div { display: grid; text-align: center; gap: 8px; }
+.play-guide-cells > div { display: grid; align-content: start; text-align: center; gap: 8px; }
 .play-guide-cells span { font-size: 10px; color: var(--guide-muted); }
 .play-guide-cells strong { display: flex; justify-content: center; align-items: center; gap: 7px; min-height: 52px; background: var(--guide-cell); border-radius: 5px; font: 500 18px 'DM Mono', monospace; }
 .play-guide-cells small { font-size: 16px; }
 .play-guide-cells strong.is-match, .play-guide-legend i.is-match { background: #287c57; color: #fff; }
+.play-guide-cells strong.is-up, .play-guide-legend i.is-up { background: #9b3842; color: #fff; border-color: transparent; }
+.play-guide-cells strong.is-down, .play-guide-legend i.is-down { background: #2e568f; color: #fff; border-color: transparent; }
+body.light-theme .play-guide-cells strong.is-up, body.light-theme .play-guide-legend i.is-up { background: #edb1c3; color: #74263e; }
+body.light-theme .play-guide-cells strong.is-down, body.light-theme .play-guide-legend i.is-down { background: #acd9ef; color: #1b506d; }
 .play-guide-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; border-top: 1px solid var(--guide-border); padding-top: 14px; margin-top: 16px; font-size: 10px; color: var(--guide-muted); }
 .play-guide-legend > span { display: inline-flex; align-items: center; gap: 5px; }
 .play-guide-legend i { width: 9px; height: 9px; border-radius: 2px; background: var(--guide-cell); border: 1px solid var(--guide-border); }

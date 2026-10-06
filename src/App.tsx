@@ -802,6 +802,26 @@ function GameApp() {
     rows.scrollTop = rows.scrollHeight;
   }, [guesses.length]);
 
+  // Keep the newest guess in view when the list area itself resizes (ads, viewport).
+  useEffect(() => {
+    const rows = boardRowsRef.current;
+    if (!rows) return;
+    let pinnedToBottom = true;
+    const onScroll = () => {
+      pinnedToBottom =
+        rows.scrollHeight - rows.scrollTop - rows.clientHeight < 8;
+    };
+    const observer = new ResizeObserver(() => {
+      if (pinnedToBottom) rows.scrollTop = rows.scrollHeight;
+    });
+    rows.addEventListener("scroll", onScroll, { passive: true });
+    observer.observe(rows);
+    return () => {
+      rows.removeEventListener("scroll", onScroll);
+      observer.disconnect();
+    };
+  }, [mode, isUpdateWindow]);
+
   useEffect(() => {
     activePlayerRef.current?.scrollIntoView({ block: "nearest" });
   }, [activePlayerIndex]);
@@ -1146,15 +1166,7 @@ function GameApp() {
           </div>
         </div>
       </section>
-      {guesses.length > 0 &&
-        meta &&
-        !message &&
-        !finished &&
-        !isStartingGame &&
-        !isSubmitting &&
-        !isRulesOpen &&
-        !isRosterOpen &&
-        !isTeamPickerOpen && (
+      {guesses.length > 0 && meta && (
           <AdSenseBanner
             className="game-ad"
             teams={gameTeams}
