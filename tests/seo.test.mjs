@@ -77,3 +77,19 @@ test('information pages are readable without scripts and have working local navi
     }
   }
 })
+
+test('new-game setup routes resolve to the right language without entering the search index', () => {
+  const routing = JSON.parse(read('vercel.json'))
+  for (const [path, destination] of [
+    ['/new', '/index.html'], ['/new/', '/index.html'],
+    ['/en/new', '/en/index.html'], ['/en/new/', '/en/index.html'],
+  ]) {
+    assert.equal(routing.rewrites.find(rule => rule.source === path)?.destination, destination)
+    assert.equal(
+      routing.headers.find(rule => rule.source === path)?.headers.find(header => header.key === 'X-Robots-Tag')?.value,
+      'noindex, follow',
+    )
+  }
+  assert.match(read('index.html'), /href="\/new\/"/)
+  assert.match(read('en/index.html'), /href="\/en\/new\/"/)
+})

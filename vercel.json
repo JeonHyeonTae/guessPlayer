@@ -5,6 +5,12 @@
     {"source": "/en/guide", "destination": "/en/", "permanent": true},
     {"source": "/en/guide/", "destination": "/en/", "permanent": true}
   ],
+  "headers": [
+    {"source": "/new", "headers": [{"key": "X-Robots-Tag", "value": "noindex, follow"}]},
+    {"source": "/new/", "headers": [{"key": "X-Robots-Tag", "value": "noindex, follow"}]},
+    {"source": "/en/new", "headers": [{"key": "X-Robots-Tag", "value": "noindex, follow"}]},
+    {"source": "/en/new/", "headers": [{"key": "X-Robots-Tag", "value": "noindex, follow"}]}
+  ],
   "rewrites": [
     {"source": "/about", "destination": "/about/index.html"},
     {"source": "/about/", "destination": "/about/index.html"},
@@ -14,6 +20,10 @@
     {"source": "/en/about/", "destination": "/en/about/index.html"},
     {"source": "/en/privacy", "destination": "/en/privacy/index.html"},
     {"source": "/en/privacy/", "destination": "/en/privacy/index.html"},
+    {"source": "/new", "destination": "/index.html"},
+    {"source": "/new/", "destination": "/index.html"},
+    {"source": "/en/new", "destination": "/en/index.html"},
+    {"source": "/en/new/", "destination": "/en/index.html"},
     {"source": "/en", "destination": "/en/index.html"},
     {"source": "/en/", "destination": "/en/index.html"},
     {"source": "/share/en/:team", "destination": "/share/en/:team/index.html"},

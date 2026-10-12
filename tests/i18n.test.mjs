@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { resolveLocale, localizedPath, playerName, playerHashtag, teamName, positionName, handName, isDailyUpdateWindow, formatRosterDate } from '../src/i18n-core.ts'
 
 const homePaths = [['/', 'ko'], ['/index.html', 'ko'], ['/en', 'en'], ['/en/', 'en'], ['/en/index.html', 'en']]
+const setupPaths = [['/new', 'ko'], ['/new/', 'ko'], ['/en/new', 'en'], ['/en/new/', 'en']]
 
 test('homepage language stays tied to its URL for visitors and crawlers in any language', () => {
   for (const [pathname, expected] of homePaths) {
@@ -18,10 +19,19 @@ test('homepage language stays tied to its URL for visitors and crawlers in any l
 })
 
 test('explicit link language overrides homepage language and saved preferences', () => {
-  for (const pathname of [...homePaths.map(([path]) => path), '/game/123']) {
+  for (const pathname of [...homePaths, ...setupPaths].map(([path]) => path).concat('/game/123')) {
     assert.equal(resolveLocale({ pathname, search: '?lang=en', stored: 'ko', browserLanguage: 'ko-KR' }), 'en')
     assert.equal(resolveLocale({ pathname, search: '?lang=ko', stored: 'en', browserLanguage: 'en-US' }), 'ko')
   }
+})
+
+test('new-game settings have stable Korean and English routes', () => {
+  for (const [pathname, expected] of setupPaths) {
+    assert.equal(resolveLocale({ pathname, stored: expected === 'ko' ? 'en' : 'ko' }), expected)
+    assert.equal(localizedPath(pathname, 'ko'), '/new/')
+    assert.equal(localizedPath(pathname, 'en'), '/en/new/')
+  }
+  assert.equal(localizedPath('/new/?team=lg&lang=ko', 'en'), '/en/new/?team=lg')
 })
 
 test('game URLs retain saved and browser language fallback', () => {

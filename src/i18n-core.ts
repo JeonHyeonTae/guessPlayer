@@ -46,13 +46,19 @@ function homeLocale(pathname: string): Locale | null {
   return null
 }
 
+function setupLocale(pathname: string): Locale | null {
+  if (/^\/new\/?$/.test(pathname)) return 'ko'
+  if (/^\/en\/new\/?$/.test(pathname)) return 'en'
+  return null
+}
+
 export function resolveLocale({ search = '', pathname = '/', stored, browserLanguage = 'ko' }: {
   search?: string; pathname?: string; stored?: string | null; browserLanguage?: string
 }): Locale {
   const requested = new URLSearchParams(search).get('lang')
   if (requested === 'ko' || requested === 'en') return requested
   // Each indexed homepage must render the same language for every visitor/crawler.
-  const pageLocale = homeLocale(pathname)
+  const pageLocale = homeLocale(pathname) ?? setupLocale(pathname)
   if (pageLocale) return pageLocale
   if (stored === 'ko' || stored === 'en') return stored
   return browserLanguage.toLowerCase().startsWith('ko') ? 'ko' : 'en'
@@ -62,6 +68,9 @@ export function localizedPath(path: string, locale: Locale) {
   const url = new URL(path, 'https://nu-kya.com')
   if (homeLocale(url.pathname)) {
     url.pathname = locale === 'en' ? '/en/' : '/'
+    url.searchParams.delete('lang')
+  } else if (setupLocale(url.pathname)) {
+    url.pathname = locale === 'en' ? '/en/new/' : '/new/'
     url.searchParams.delete('lang')
   } else {
     url.searchParams.set('lang', locale)

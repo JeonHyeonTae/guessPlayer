@@ -18,7 +18,7 @@ npm run dev
 2. **Environment Variables**에 `VITE_API_BASE_URL`을 `https://your-api-domain.com`처럼 설정합니다. 끝 슬래시는 제외합니다.
 3. Build Command는 `npm run build`, Output Directory는 `dist`를 사용합니다.
 
-`vercel.json`은 `/game/{id}`처럼 직접 접속한 SPA 경로도 앱으로 연결합니다.
+`vercel.json`은 `/game/{id}`처럼 직접 접속한 SPA 경로도 앱으로 연결합니다. `/`과 `/en/`은 1군 전체 구단으로 첫 게임을 자동 생성하고, 기존 구단·로스터 선택 화면은 `/new/`와 `/en/new/`에서 엽니다. 새 게임 버튼은 선택 화면으로 이동합니다. 선택 화면은 광고 없이 제공하며 검색 색인에서 제외합니다.
 
 백엔드에는 Vercel 도메인을 허용하는 CORS 설정이 필요합니다.
 
@@ -51,13 +51,13 @@ npm run dev
 
 공유 버튼과 결과 복사는 선택 언어에 맞는 주소를 사용합니다. 영어는 `/share/en/{team}/`, 한국어는 `/share/20260907/{team}/`이며 한국어 LG만 `/share/20260907-v2/lg/`입니다. 팀 코드는 `kt`, `nc`, `ssg`, `kia`, `doosan`, `lotte`, `samsung`, `lg`, `kiwoom`, `hanwha`입니다. URL 및 결과 문구는 `src/share.ts`에서 관리합니다.
 
-- `public/share/en/{team}/index.html`: 구단별 영문 제목·설명·이미지를 가진 정적 공유 페이지. 공유 서비스가 JavaScript 없이 메타태그를 읽을 수 있고, 사람이 열면 영어 홈으로 이동합니다.
+- `public/share/en/{team}/index.html`: 구단별 영문 제목·설명·이미지를 가진 정적 공유 페이지. 공유 서비스가 JavaScript 없이 메타태그를 읽을 수 있고, 사람이 열면 해당 구단의 영어 게임으로 이동합니다.
 - `public/share-{team}-en-20260909.jpg`: 기존 구단별 디자인의 영문판 10종, 1200×675 JPEG, 각 350KB 미만.
 - `public/thumbnail-en-20260909.jpg`: 영어 홈 `/en/`의 기본 공유 이미지. 홈페이지 언어 전환 시 주소도 `/en/` 또는 `/`로 바뀌므로 주소창에서 복사한 홈 링크에도 해당 언어 카드가 표시됩니다.
 - 영문 카드는 OG와 X의 `summary_large_image`를 사용하며, 한국어 원본 이미지는 유지합니다. 날짜가 포함된 새 이미지 경로로 기존 로고 이미지 캐시와 구분합니다.
 - 영문 이미지는 built-in `image_gen`으로 생성했으며, 원본·출력 경로와 최종 프롬프트는 `docs/share-images-en-prompts.md`에 보관합니다.
 
-- `public/share/20260907/{team}/index.html`: JavaScript 실행 없이 읽을 수 있는 공유 메타태그. 사람이 열면 홈으로 이동합니다.
+- `public/share/20260907/{team}/index.html`: JavaScript 실행 없이 읽을 수 있는 공유 메타태그. 사람이 열면 해당 구단의 게임으로 이동합니다.
 - `public/share-{team}-20260907.jpg`: 1200×675 JPEG, 각 350KB 미만. 기존 PNG는 원본으로 유지합니다.
 - LG v2 이미지는 `public/share-lg-20260907-v2.jpg`이며 1000×562 JPEG로 재인코딩했습니다. 기존 LG 주소도 이 이미지를 참조합니다. iOS 표시 개선 여부는 배포 후 별도로 확인해야 합니다.
 - 기존 팀 주소의 메타태그도 새 JPEG를 참조합니다.

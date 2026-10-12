@@ -24,7 +24,7 @@ import {
   type RosterPlayer,
   type Status,
 } from "./api";
-import { resultShareText, shareUrlForTeam } from "./share";
+import { resultShareText, sharePathForTeam, shareUrlForTeam } from "./share";
 
 const MAX_TRIES = 9;
 const fields: Array<
@@ -424,6 +424,22 @@ function gameIdFromPath() {
   return match?.[1] ?? null;
 }
 
+function isSetupPath() {
+  return /^\/(?:en\/)?new\/?$/.test(window.location.pathname);
+}
+
+function isHomePath() {
+  return /^\/(?:en\/?)?$/.test(window.location.pathname);
+}
+
+function sharedTeamFromPath() {
+  const path = window.location.pathname;
+  const match = path.match(
+    /^\/(?:share\/(?:en|20260907(?:-v2)?)\/)?(kt|nc|ssg|kia|doosan|lotte|samsung|lg|kiwoom|hanwha|기아|두산|롯데|삼성|엘지|키움|한화)\/?$/i,
+  );
+  return match ? sharePathForTeam(match[1]) : null;
+}
+
 export default function App() {
   return (
     <LanguageProvider>
@@ -447,7 +463,6 @@ function GameApp() {
   const [shareTeams, setShareTeams] = useState<string[]>([]);
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
   const [gameTeams, setGameTeams] = useState<string[]>([]);
-  const [isTeamPickerOpen, setIsTeamPickerOpen] = useState(false);
   const [isRosterOpen, setIsRosterOpen] = useState(false);
   const [isRulesOpen, setIsRulesOpen] = useState(false);
   const [rosterPlayers, setRosterPlayers] = useState<RosterPlayer[]>([]);
@@ -481,6 +496,7 @@ function GameApp() {
   const boardRowsRef = useRef<HTMLDivElement>(null);
   const submittingRef = useRef(false);
   const gameVersionRef = useRef(0);
+  const homeStartRequestedRef = useRef(false);
   const wasUpdateWindowRef = useRef(isDailyUpdateWindow());
   const finished = Boolean(answer);
   const resultGrid = useMemo(
@@ -571,8 +587,8 @@ function GameApp() {
       setIsAnswerModalOpen(true);
     }
   }
-  async function start(nextMode: Mode) {
-    if (selectedTeams.length === 0) {
+  async function start(nextMode: Mode, teams = selectedTeams) {
+    if (teams.length === 0) {
       setMessage("한 개 이상의 구단을 선택해주세요.");
       return;
     }
@@ -580,7 +596,7 @@ function GameApp() {
     const gameVersion = ++gameVersionRef.current;
     setIsStartingGame(true);
     try {
-      const game = await api.create(nextMode, includeStaff, selectedTeams);
+      const game = await api.create(nextMode, includeStaff, teams);
       if (gameVersion !== gameVersionRef.current) return;
       setGameId(game.gameId);
       window.history.replaceState(
@@ -592,8 +608,8 @@ function GameApp() {
       setSetupMode(game.mode);
       setIncludeStaff(game.includeStaff);
       setGameIncludesStaff(game.includeStaff);
+      setSelectedTeams(game.teams);
       setGameTeams(game.teams);
-      setIsTeamPickerOpen(false);
       setGuesses([]);
       setAnswer(null);
       setIsAnswerModalOpen(false);
@@ -613,20 +629,7 @@ function GameApp() {
     }
   }
   function returnToSetup() {
-    gameVersionRef.current += 1;
-    setGameId(null);
-    setMode(null);
-    setGameIncludesStaff(false);
-    setGameTeams([]);
-    setGuesses([]);
-    setAnswer(null);
-    setIsAnswerModalOpen(false);
-    setQuery("");
-    setPlayers([]);
-    setActivePlayerIndex(-1);
-    setMessage(null);
-    setMeta(null);
-    window.history.replaceState(null, "", localizedPath("/", locale));
+    window.location.assign(localizedPath("/new/", locale));
   }
   async function selectPlayer(player: Player) {
     if (
@@ -741,6 +744,16 @@ function GameApp() {
   }, [gameId]);
 
   useEffect(() => {
+    if (gameId || isHomePath() || isSetupPath()) return;
+    const team = sharedTeamFromPath();
+    const home = team ? `/?team=${encodeURIComponent(team)}` : "/";
+    const nextLocale = window.location.pathname.startsWith("/share/en/")
+      ? "en"
+      : localeRef.current;
+    window.location.replace(localizedPath(home, nextLocale));
+  }, [gameId]);
+
+  useEffect(() => {
     api
       .teams(setupMode)
       .then((teams) => {
@@ -758,6 +771,29 @@ function GameApp() {
       .then(setShareTeams)
       .catch(() => setShareTeams([]));
   }, []);
+
+  useEffect(() => {
+    if (
+      !isHomePath() ||
+      gameId ||
+      teamOptions.length === 0 ||
+      isUpdateWindow ||
+      homeStartRequestedRef.current
+    )
+      return;
+
+    homeStartRequestedRef.current = true;
+    const requestedTeam = new URLSearchParams(window.location.search)
+      .get("team")
+      ?.toLowerCase();
+    const matchingTeams = requestedTeam
+      ? teamOptions.filter((team) => sharePathForTeam(team) === requestedTeam)
+      : [];
+    void start(
+      "REGULAR",
+      matchingTeams.length > 0 ? matchingTeams : teamOptions,
+    );
+  }, [gameId, teamOptions, isUpdateWindow]);
 
   useEffect(() => {
     if (!canSearch || !mode || !isSearchFocused) {
@@ -869,7 +905,7 @@ function GameApp() {
       </main>
     );
 
-  if (!mode)
+  if (isSetupPath())
     return (
       <main className="landing">
         <LanguageToggle />
@@ -890,7 +926,9 @@ function GameApp() {
           {isDarkMode ? t("라이트 모드") : t("다크 모드")}
         </button>
         <section>
-          <BrandMark />
+          <BrandMark
+            onClick={() => window.location.assign(localizedPath("/", locale))}
+          />
           <h1>
             {t("한국 프로야구")}
             <br />
@@ -901,6 +939,9 @@ function GameApp() {
               ? "Choose your teams. Find the player in nine guesses."
               : "구단을 고르고, 9번 안에 선수를 맞혀보세요."}
           </p>
+          <a className="quick-game-link" href={localizedPath("/", locale)}>
+            {locale === "en" ? "Play with all teams →" : "전체 구단으로 바로 시작 →"}
+          </a>
           <div className="mode-grid">
             <button
               className={setupMode === "REGULAR" ? "selected" : undefined}
@@ -977,10 +1018,47 @@ function GameApp() {
       </main>
     );
 
+  if (!mode)
+    return (
+      <main className="app game-loading">
+        <header>
+          <BrandMark />
+          <div className="header-actions">
+            <LanguageToggle />
+            <RulesButton onClick={() => setIsRulesOpen(true)} />
+          </div>
+        </header>
+        <section className="hero">
+          <p className="eyebrow">REGULAR ROSTER</p>
+          <h1>{t("선수 맞추기")}</h1>
+          <p role="status">
+            {message
+              ? t(message)
+              : locale === "en"
+                ? "Preparing your first game with all first-team clubs…"
+                : "1군 전체 구단으로 첫 게임을 준비하고 있어요…"}
+          </p>
+          {message && (
+            <button className="game-action" onClick={() => window.location.reload()}>
+              {locale === "en" ? "Try again" : "다시 시도"}
+            </button>
+          )}
+          <a className="game-action" href={localizedPath("/new/", locale)}>
+            {locale === "en" ? "Choose game settings" : "직접 구단 고르기"}
+          </a>
+        </section>
+        <ClueExample en={locale === "en"} />
+        <SiteFooter />
+        {isRulesOpen && <RulesModal onClose={() => setIsRulesOpen(false)} />}
+      </main>
+    );
+
   return (
     <main className="app">
       <header>
-        <BrandMark onClick={returnToSetup} />
+        <BrandMark
+          onClick={() => window.location.assign(localizedPath("/", locale))}
+        />
         <div className="header-actions">
           <LanguageToggle />
           <ShareMenu
@@ -1009,8 +1087,7 @@ function GameApp() {
           <h1>{t("선수 맞추기")}</h1>
           <button
             className="game-action action-new"
-            disabled={isStartingGame}
-            onClick={() => start(mode)}
+            onClick={returnToSetup}
             aria-label={t("새 게임 시작")}
             title={t("새 게임 시작")}
           >
@@ -1021,7 +1098,7 @@ function GameApp() {
           </button>
           <button
             className="game-action action-teams"
-            onClick={() => setIsTeamPickerOpen(true)}
+            onClick={returnToSetup}
           >
             {t("구단 선택")}
           </button>
@@ -1166,6 +1243,14 @@ function GameApp() {
           </div>
         </div>
       </section>
+      {guesses.length === 0 && (
+        <section
+          className="home-guide"
+          aria-label={locale === "en" ? "How guess clues work" : "추측 단서 예시"}
+        >
+          <ClueExample en={locale === "en"} />
+        </section>
+      )}
       {guesses.length > 0 && meta && (
           <AdSenseBanner
             className="game-ad"
@@ -1225,17 +1310,13 @@ function GameApp() {
             <div className="result-actions">
               <button
                 className="result-new-game"
-                disabled={isStartingGame}
-                onClick={() => start(mode)}
+                onClick={returnToSetup}
               >
-                {isStartingGame ? t("시작 중…") : t("새 게임")}
+                {t("새 게임")}
               </button>
               <button
                 className="result-team-select"
-                onClick={() => {
-                  setIsAnswerModalOpen(false);
-                  setIsTeamPickerOpen(true);
-                }}
+                onClick={returnToSetup}
               >
                 {t("구단 선택")}
               </button>
@@ -1285,101 +1366,6 @@ function GameApp() {
             ) : (
               <PlayerRoster players={visibleRosterPlayers} />
             )}
-          </section>
-        </div>
-      )}
-      {isTeamPickerOpen && (
-        <div
-          className="game-modal-backdrop"
-          onMouseDown={() => setIsTeamPickerOpen(false)}
-        >
-          <section
-            className="game-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-label={t("다음 게임 설정")}
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <div className="modal-header">
-              <div>
-                <p className="eyebrow">NEXT GAME</p>
-                <h2>{t("다음 게임 출제 구단")}</h2>
-              </div>
-              <button
-                onClick={() => setIsTeamPickerOpen(false)}
-                aria-label={t("닫기")}
-              >
-                ×
-              </button>
-            </div>
-            <p>
-              {t(
-                "게임을 시작하면 아래 설정으로 새로운 정답 선수가 출제됩니다.",
-              )}
-            </p>
-            <div className="modal-mode-grid">
-              <button
-                className={setupMode === "REGULAR" ? "selected" : undefined}
-                onClick={() => setSetupMode("REGULAR")}
-              >
-                {t("1군")}
-                <span>{t("현역 1군 선수")}</span>
-              </button>
-              <button
-                className={setupMode === "ALL" ? "selected" : undefined}
-                onClick={() => setSetupMode("ALL")}
-              >
-                {t("1군 + 퓨처스")}
-                <span>{t("더 넓은 로스터")}</span>
-              </button>
-            </div>
-            <StaffToggle
-              includeStaff={includeStaff}
-              onChange={setIncludeStaff}
-              modal
-            />
-            <div className="modal-team-picker">
-              <b>{t("출제 구단")}</b>
-              <button
-                onClick={() =>
-                  setSelectedTeams(
-                    selectedTeams.length === teamOptions.length
-                      ? []
-                      : teamOptions,
-                  )
-                }
-              >
-                {selectedTeams.length === teamOptions.length
-                  ? t("전체 해제")
-                  : t("전체 선택")}
-              </button>
-              <div className="team-list">
-                {teamOptions.map((team) => (
-                  <button
-                    className={
-                      selectedTeams.includes(team) ? "selected" : undefined
-                    }
-                    key={team}
-                    onClick={() =>
-                      setSelectedTeams((previous) =>
-                        previous.includes(team)
-                          ? previous.filter((value) => value !== team)
-                          : [...previous, team],
-                      )
-                    }
-                  >
-                    {teamName(team, locale)}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <button
-              className="modal-start-game"
-              disabled={selectedTeams.length === 0 || isStartingGame}
-              onClick={() => start(setupMode)}
-            >
-              {isStartingGame ? t("게임 시작 중…") : t("새 게임 시작")}
-            </button>
           </section>
         </div>
       )}
